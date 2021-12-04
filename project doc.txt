@@ -1,0 +1,56 @@
+GAVIN
+Venue booker:
+	register an account
+	login using username and password
+	they go to a dashboard:
+		calender (current month), can change months
+			be able to click on a date inorder to program desisred performanceSlot(create vacancies). Like, 4 to 7, there is an opening
+			performanceSlot will have an price (price will be input by the venue each time a slot is created)
+			display avaibale performers for open vacanciess (roster only!)
+			be able to book performers who are showing avaible. (this click will change the vacant status to Pending)
+			PerformanceSlot have status's: Vacant (initial), Pending, Booked (this is triggered by performer), CNX, completed, noshowed (!MVP)
+			Must be able to cnx the performanceSlot (from vacant, pending or booked).
+			Venue Changing the status of performanceSlots will always generete an update message to the performer
+			one performer per slot
+			!MVP-->venue can change complted to noshowed
+			!MVP-->Print report of bookings
+			
+
+		Roster
+			!MVP-->Press this button to send an invite to all performers on your roster requesting they update their avaibality
+			Invite new performers (For sho required)
+			list of performers (These have to be speficially added by the venue)
+			Add performers - search function
+			Click on performer to see description
+			Remove performers from roster (soft delete)
+
+		Venue:
+			Name
+			email
+			address
+			phone number
+			POC
+
+		profile:
+			edit contact info
+
+Performer View:
+	register an account organically or via an invite from a venue
+	login:
+		dashboard is the same as the venues (as far as looks go)
+		
+	Performers:
+		username and pass
+		stage name
+		email
+		phone number (PK)
+		description (limited of course)
+
+	Calender:
+		input avaiblaity
+		this will display any requests (status of Pending from veneue)
+		can accept requests (triggers booked email to vender)
+		they can cnx at any point
+
+	Profile:
+		edit contact info
