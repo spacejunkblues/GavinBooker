@@ -214,8 +214,10 @@ def register_dummy(request, *args, **kwargs):
         
         
         #register admins, 
-        #'Admin' should already created using createsuperuser, DDL file assumes ID=1
         permission = permission = Permission.objects.get(name='Can Admin')
+        user = User.objects.create_user('admin',password='1qaz2wsx!QAZ@WSX')
+        user.user_permissions.add(permission)
+        update_dummy_id(31,user.id)
         user = User.objects.create_user('daisy',password='df1enu')
         user.user_permissions.add(permission)
         update_dummy_id(32,user.id)
@@ -307,6 +309,8 @@ def delete_dummy(request, *args, **kwargs):
         
         
         #delete admin
+        user = User.objects.get(username='admin')
+        user.delete()
         user = User.objects.get(username='daisy')
         user.delete()
         
