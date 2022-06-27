@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<head>
+	<title> Gavin </title>
+</head>
+
+<body>
+	{% include 'navbar.html' %}
+	
+	{% if messages %}
+		{% for message in messages %}
+			{{ message }}
+		{% endfor %}
+	{% endif %}
+	{% block content %}
+	{% endblock %}
+</body>
+
+</html>

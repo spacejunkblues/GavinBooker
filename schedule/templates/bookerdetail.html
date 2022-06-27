@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+
+table th, table th * {
+
+    text-align: left;
+}
+</style>
+
+	<br><br>
+	
+	{% if obj.status_type != None %}
+		<!-- display booking info -->
+
+		<h3>Booking Information</h3>
+		<table>
+			<tr>
+				<th>Status</th>
+				<th>Performer</th>
+				<th>Start Time</th>
+				<th>End Time</th>
+				<th>Payment</th>
+				<th>Condition</th>
+			</tr>
+			<tr>
+				<td>{{ obj.status_type }}</td>
+				<td>{{ obj.displayname }}</td>
+				<td>{{ obj.start_time }}</td>
+				<td>{{ obj.end_time }}</td>
+				<td>{{ obj.payment }}</td>
+				<td>{{ obj.condition }}</td>
+			</tr>
+		</table>	
+		<br><br>
+		{% if obj.status_id == 2 %} <!-- status id of 2 is 'Booked'-->
+			<form method='POST'> {% csrf_token %}
+				<input type='submit' name='complete' value='Performance Completed' />
+				<input type='submit' name='cancel' value='Cancel Booking' />
+			</form>
+		{% endif %}
+
+	{% else %}
+		<!-- display availability info -->
+		<h3>Preformer Availability Information</h3>
+		<table>
+			<tr>
+				<th>Performer</th>
+				<th>Start Time</th>
+				<th>End Time</th>
+				<th>Location</th>
+				<th>Asking Rate</th>
+			</tr>
+			<tr>
+				<td>{{ obj.displayname }}</td>
+				<td>{{ obj.start_time }}</td>
+				<td>{{ obj.end_time }}</td>
+				<td>{{ obj.location }}</td>
+				<td>{{ obj.rate }}</td>
+			</tr>
+		</table>
+		<br><br>
+		<form method='POST'> {% csrf_token %}
+			{{ form.as_p }}
+			<input type='submit' name='offer' value='Offer' />
+		</form>
+	{% endif %}
+
+
+
+
+{% endblock %}

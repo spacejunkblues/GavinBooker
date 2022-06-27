@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+
+table th, table th * {
+
+    text-align: left;
+}
+</style>
+
+	<br><br>
+	
+	{% if obj.status_type != None %}
+		<!-- display booking info -->
+		<h3>Venue Information</h3>
+		<table>
+			<tr>
+				<th>Venue</th>
+				<th>Address</th>
+				<th>Booker</th>
+				<th>Email</th>
+				<th>Phone Number</th>
+			</tr>
+			<tr>
+				<td>{{ obj.name }}</td>
+				<td>{{ obj.address }}</td>
+				<td>{{ obj.displayname }}</td>
+				<td>{{ obj.email }}</td>
+				<td>{{ obj.phone_number }}</td>
+			</tr>
+		</table>
+		<br><br>
+		<h3>Booking Information</h3>
+		<table>
+			<tr>
+				<th>Status</th>
+				<th>Start Time</th>
+				<th>End Time</th>
+				<th>Payment</th>
+				<th>Condition</th>
+			</tr>
+			<tr>
+				<td>{{ obj.status_type }}</td>
+				<td>{{ obj.start_time }}</td>
+				<td>{{ obj.end_time }}</td>
+				<td>{{ obj.payment }}</td>
+				<td>{{ obj.condition }}</td>
+			</tr>
+		</table>	
+		<br><br>
+		
+		{% if obj.status_id == 1 %} <!-- status id of 1 is 'Offered'-->
+			<form method='POST'> {% csrf_token %}
+				<input type='submit' name='accept' value='Accept' />
+				<input type='submit' name='decline' value='Decline' />
+			</form>
+		{% endif %}
+
+	{% else %}
+		<!-- display availability info -->
+		<h3>Availability Information</h3>
+		<table>
+			<tr>
+				<th>Start Time</th>
+				<th>End Time</th>
+				<th>Location</th>
+			</tr>
+			<tr>
+				<td>{{ obj.start_time }}</td>
+				<td>{{ obj.end_time }}</td>
+				<td>{{ obj.location }}</td>
+			</tr>
+		</table>
+	{% endif %}
+
+
+
+
+{% endblock %}

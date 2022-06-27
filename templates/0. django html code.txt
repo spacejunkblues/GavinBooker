@@ -1,0 +1,55 @@
+This will pass everything to be run in base.html
+
+{% extends "base.html" %}
+
+all code must be within
+
+{% block content %}
+{% endblock %}
+
+
+items in this case 'items' is a key from the context
+
+{% for item in items %}
+	<li> {{ forloop.counter }}, {{ item }} </li>
+{% endfor %}
+
+{% if variable == 4 %}
+	{{ variable|add:5 }}
+{% elif variable == 5 %}
+{% else %}
+{% endif %}
+
+filters:
+|add
+|capfirst
+|upper
+|safe -turns an html string into actual html code
+|slugify -makes it URL safe
+
+forms:
+<form method='POST'> {% csrf_token %}
+{{ form.as_p }}
+<input type='submit' value='Submit' />
+</form>
+
+
+lockdown
+
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def index(request):
+    return render(request, 'professors/index.html')
+
+
+source /scripts/activate
+
+heroku:
+install heroku cli
+pip install gunicorn
+pip install django-heroku
+pip install dj_database_url
+pip install python-decouple
+add Procfile
+	web: gunicorn gavinsrc.wsgi
