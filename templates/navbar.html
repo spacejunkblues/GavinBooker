@@ -1,0 +1,36 @@
+<style>
+
+a:link {
+	text-decoration: none;
+}
+a:hover {
+	color: #ADD8E6;
+	text-decoration: none;
+}
+a:active {
+	color: #0000FF;
+	text-decoration: none;
+}
+.nav-bar {
+	background-color: #808080;
+	padding-top: 20px;
+	padding-bottom: 20px;
+	padding-left: 20px;
+}
+.nav-items{
+	color: #F8F8FF;
+}
+</style>
+
+<div class="nav-bar">
+	{% if user.is_authenticated %}
+		<div style="color:ghostwhite; display:inline-block;">{{ user.username }}</div>
+		<a href="/" class="nav-items">Calendar</a>
+		{% if perms.auth.can_book %}
+			<a href="/roster" class="nav-items">Roster</a>
+		{% endif %}
+		<a href="/users/logout_user" class="nav-items">Logout</a>
+	{% else %}
+		<a href="/users/login_user" class="nav-items">Login</a>
+	{% endif %}
+</div>

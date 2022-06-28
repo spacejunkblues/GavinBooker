@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<h1> Select a performance to review</h1>
+	<br><br>
+
+	<table>
+	<tr>
+		<th>Performer</th>
+		<th>Date</th>
+		<th>Venue</th>
+		<th>Address</th>
+	</tr>
+	{% for row in obj %}
+		<tr>	
+			<td><a href="review/{{ row.booking_id }}">{{ row.displayname }}</a></td>
+			<td>{{ row.start_time }}</td>
+			<td>{{ row.name }}</td>
+			<td>{{ row.address }}</td>
+		</tr>
+	{% endfor %}
+	</table>
+
+{% endblock %}

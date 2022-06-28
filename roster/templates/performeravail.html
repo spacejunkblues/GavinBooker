@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+
+table th, table th * {
+
+    text-align: left;
+}
+</style>
+
+	<h1>Performer's Availability</h1>
+
+	<!-- display roster info -->
+	<h3>{{ info.displayname }} ${{ info.rate }}</h3>
+	<table>
+		<tr>
+			<th>Location</th>
+			<th>Start Time</th>
+			<th>End Time</th>
+		</tr>
+		{% for avail in obj%}
+			<tr>
+				<td>
+					<a href="/detail/{{ avail.availability_id }}">
+					{{ avail.location }}
+					</a>
+				</td>
+				<td>{{ avail.start_time }}</td>
+				<td>{{ avail.end_time }}</td>
+			</tr>
+		{% endfor %}
+	</table>
+
+		
+
+
+
+
+
+{% endblock %}
