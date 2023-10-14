@@ -174,7 +174,7 @@ def register_dummy(request, *args, **kwargs):
         user = User.objects.create_user('edmislife',password='6qyk0q')
         user.user_permissions.add(permission)
         update_dummy_id(19,user.id)
-        user = User.objects.create_user('stark',password='diamond456')
+        user = User.objects.create_user('mags',password='diamond456')
         user.user_permissions.add(permission)
         update_dummy_id(20,user.id)
         
@@ -208,7 +208,7 @@ def register_dummy(request, *args, **kwargs):
         user = User.objects.create_user('james',password='yi0i4w')
         user.user_permissions.add(permission)
         update_dummy_id(29,user.id)
-        user = User.objects.create_user('mags',password='diamond456')
+        user = User.objects.create_user('stark',password='diamond456')
         user.user_permissions.add(permission)
         update_dummy_id(30,user.id)
         
@@ -281,7 +281,7 @@ def delete_dummy(request, *args, **kwargs):
         user.delete()
         user = User.objects.get(username='edmislife')
         user.delete()
-        user = User.objects.get(username='stark')
+        user = User.objects.get(username='mags')
         user.delete()
         
         
@@ -304,7 +304,7 @@ def delete_dummy(request, *args, **kwargs):
         user.delete()
         user = User.objects.get(username='james')
         user.delete()
-        user = User.objects.get(username='mags')
+        user = User.objects.get(username='stark')
         user.delete()
         
         
