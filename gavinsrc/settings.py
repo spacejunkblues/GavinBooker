@@ -104,10 +104,10 @@ WSGI_APPLICATION = 'gavinsrc.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'd7svrnurqdbi44',
-        'USER': 'dwemmhbmhyclia',
-        'PASSWORD': '5df4cce44787c5fdb99fd778f49cbe58eafa8ffb719e88e3cb4e39236f277ca8',
-        'HOST': 'ec2-18-210-159-154.compute-1.amazonaws.com',
+        'NAME': 'd7olv2fgjhcm1m',
+        'USER': 'miikhwtzlmrnqb',
+        'PASSWORD': '0f59016c7c0b469df7ba65a0af0b7c4846088a1bfdea9ad5070cccc332f7572f',
+        'HOST': 'ec2-54-208-11-146.compute-1.amazonaws.com',
         'PORT': '5432',
     }
 }
