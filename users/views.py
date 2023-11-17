@@ -97,31 +97,26 @@ def update_dummy_id(user_id, django_id):
 
 
 #this function will load all dummy users into the django database
+#this function will error out if the permissions are already made
+#also, the admin user add will error out if you did "createsuperuser"
 def register_dummy(request, *args, **kwargs):            
     #query django authication system
-    print("test1")
     user = authenticate(request, username='nexttswift', password='1qaz')
-    print(user)
-    print("test2")
     #make permissions
     content_type = ContentType.objects.get_for_model(User)
     
-    print("test2.1")
     #I commented these out. But they need to be ran the first time
-    #Permission.objects.create(codename='can_perform',
-    #                            name='Can Perform',
-    #                            content_type=content_type)
-    print("test2.2")
-    #Permission.objects.create(codename='can_book',
-    #                            name='Can Book',
-    #                            content_type=content_type)
-    print("test2.3")
+    Permission.objects.create(codename='can_perform',
+                                name='Can Perform',
+                                content_type=content_type)
+    Permission.objects.create(codename='can_book',
+                                name='Can Book',
+                                content_type=content_type)
     
-    #Permission.objects.create(codename='can_admin',
-    #                            name='Can Admin',
-    #                            content_type=content_type)
+    Permission.objects.create(codename='can_admin',
+                                name='Can Admin',
+                                content_type=content_type)
     
-    print("test3")
     #check to make sure dummy users aren't already loaded
     if user is None:
         permission = permission = Permission.objects.get(name='Can Perform')
@@ -231,15 +226,13 @@ def register_dummy(request, *args, **kwargs):
         user.user_permissions.add(permission)
         update_dummy_id(32,user.id)
         
-        print("test4")
         return redirect('/admin')
 
     else:
         #Invalid log in
         messages.success(request, ('Dummies already loaded'))
     
-    print("test5")
-    
+        
     return redirect('/users')
     
 #this function will load all dummy users into the django database

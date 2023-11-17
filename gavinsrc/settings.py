@@ -83,6 +83,7 @@ WSGI_APPLICATION = 'gavinsrc.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
+#example of connecting to Sqlite3 database
 #DATABASES = {
 #    'default': {
 #        'ENGINE': 'django.db.backends.sqlite3',
@@ -90,6 +91,7 @@ WSGI_APPLICATION = 'gavinsrc.wsgi.application'
 #    }
 #}
 
+#example of connecting locally
 #DATABASES = {
 #    'default': {
 #        'ENGINE': 'django.db.backends.postgresql',
@@ -101,17 +103,31 @@ WSGI_APPLICATION = 'gavinsrc.wsgi.application'
 #    }
 #}
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'd7olv2fgjhcm1m',
-        'USER': 'miikhwtzlmrnqb',
-        'PASSWORD': '0f59016c7c0b469df7ba65a0af0b7c4846088a1bfdea9ad5070cccc332f7572f',
-        'HOST': 'ec2-54-208-11-146.compute-1.amazonaws.com',
-        'PORT': '5432',
-    }
-}
+#use this to connect to heroku when deployed and locally when building
+#if IS_HEROKU_APP:
+    #put DATABAES line here
+#else:
+    #Connect to a local database instead.
 
+#example of hard coding a connection to a postgres database
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql',
+#        'NAME': 'd7olv2fgjhcm1m',
+#        'USER': 'miikhwtzlmrnqb',
+#        'PASSWORD': '0f59016c7c0b469df7ba65a0af0b7c4846088a1bfdea9ad5070cccc332f7572f',
+#        'HOST': 'ec2-54-208-11-146.compute-1.amazonaws.com',
+#        'PORT': '5432',
+#    }
+#}
+
+DATABASES = {
+    'default': dj_database_url(
+        conn_max=600,
+        #conn_health_checks=True,
+        ssl_require=True,
+    )
+}
         
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
