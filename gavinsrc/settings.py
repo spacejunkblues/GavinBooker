@@ -123,7 +123,7 @@ WSGI_APPLICATION = 'gavinsrc.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url(
-        conn_max=600,
+        conn_max_age=600,
         #conn_health_checks=True,
         ssl_require=True,
     ),
