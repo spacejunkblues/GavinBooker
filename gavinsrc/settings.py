@@ -110,18 +110,19 @@ WSGI_APPLICATION = 'gavinsrc.wsgi.application'
     #Connect to a local database instead.
 
 #example of hard coding a connection to a postgres database
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.postgresql',
-#        'NAME': 'd7olv2fgjhcm1m',
-#        'USER': 'miikhwtzlmrnqb',
-#        'PASSWORD': '0f59016c7c0b469df7ba65a0af0b7c4846088a1bfdea9ad5070cccc332f7572f',
-#        'HOST': 'ec2-54-208-11-146.compute-1.amazonaws.com',
-#        'PORT': '5432',
-#    }
-#}
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'd7olv2fgjhcm1m',
+        'USER': 'miikhwtzlmrnqb',
+        'PASSWORD': '0f59016c7c0b469df7ba65a0af0b7c4846088a1bfdea9ad5070cccc332f7572f',
+        'HOST': 'ec2-54-208-11-146.compute-1.amazonaws.com',
+        'PORT': '5432',
+    }
+}
 
-DATABASES['default'] = dj_database_url(conn_max_age=600,ssl_require=True)
+#This didn't work
+#DATABASES['default'] = dj_database_url(conn_max_age=600,ssl_require=True)
 
         
 # Password validation
