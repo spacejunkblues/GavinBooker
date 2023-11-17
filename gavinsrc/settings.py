@@ -126,7 +126,7 @@ DATABASES = {
         conn_max=600,
         #conn_health_checks=True,
         ssl_require=True,
-    )
+    ),
 }
         
 # Password validation
