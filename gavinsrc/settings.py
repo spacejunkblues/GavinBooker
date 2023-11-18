@@ -9,11 +9,11 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
-
 from pathlib import Path
 import django_heroku
 import dj_database_url
 from decouple import config
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,12 +26,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-plfg_2_gi0#(k)v5k5=p0a2y2+@z-+r)pxr*14*wx7u_7zj4)c'
 
+# The `DYNO` env var is set on Heroku CI, but it's not a real Heroku app, so we have to
+# also explicitly exclude CI:
+# https://devcenter.heroku.com/articles/heroku-ci#immutable-environment-variables
+IS_HEROKU_APP = "DYNO" in os.environ and not "CI" in os.environ
+
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = True
+if not IS_HEROKU_APP:
+    DEBUG = True
 
 #ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'gavinbooker.herokuapp.com' , '*']
 ALLOWED_HOSTS = []
 
+if not IS_HEROKU_APP:
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'gavinbooker.herokuapp.com' , '*']
 
 # Application definition, these are like features
 
@@ -123,12 +131,25 @@ WSGI_APPLICATION = 'gavinsrc.wsgi.application'
 
 #This didn't work
 #DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
-DATABASES = {
-    "default": dj_database_url.config(
-        conn_max_age=600,
-        ssl_require=True,
-    ),
-}
+
+if IS_HEROKU_APP:
+    DATABASES = {
+        "default": dj_database_url.config(
+            conn_max_age=600,
+            ssl_require=True,
+        ),
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'gavin_local',
+            'USER': 'postgres',
+            'PASSWORD': 'password',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
