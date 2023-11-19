@@ -186,27 +186,39 @@ def get_performer_details(request, id):
     
     #--- check for post after this point ---
     #otherwise, one performer could accept bookings for another
-    if request.method == "POST" and 'status_id' in detail_info.keys():
-        #ensure that only pending events ('Offered') can POST
-        if detail_info['status_id']!=1:
+    if request.method == "POST":
+        #There is a booking associated with this availability
+        if 'status_id' in detail_info.keys():
+        
+            #ensure that only pending events ('Offered') can POST, anything after performers can't modify
+            if detail_info['status_id']!=1:
+                return redirect('/')
+        
+            #init new_status
+            new_status = detail_info['status_id']
+            
+            if 'accept' in request.POST.keys():
+                new_status = 2 #this means the gig is booked
+            if 'decline' in request.POST.keys():
+                new_status = 3 #this means the gig is cancelled
+        
+            #update the new status in the bookings table
+            cursor.execute("UPDATE Bookings \
+                            SET status_ID = %s \
+                            WHERE availability_ID = %s",
+                            [new_status, id])
+            
+            #redirect back to the same detail page, which will refresh the page with new status
+            return redirect('/schedule/detail/' + str(id))
+       
+        #There is no status, so it's just an availbility at this point
+        #allow performer to delete
+        else:
+            #Delete selected availability
+            cursor.execute("DELETE FROM Availability \
+                            WHERE availability_ID = %s",
+                            [id])
             return redirect('/')
-        
-        #init new_status
-        new_status = detail_info['status_id']
-        
-        if 'accept' in request.POST.keys():
-            new_status = 2 #this means the gig is booked
-        if 'decline' in request.POST.keys():
-            new_status = 3 #this means the gig is cancelled
-    
-        #update the new status in the bookings table
-        cursor.execute("UPDATE Bookings \
-                        SET status_ID = %s \
-                        WHERE availability_ID = %s",
-                        [new_status, id])
-        
-        #redirect back to the same detail page, which will refresh the page with new status
-        return redirect('/schedule/detail/' + str(id))
         
     #wrap the info in a dict to send out for rendering
     context = {'obj':detail_info}

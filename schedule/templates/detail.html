@@ -13,7 +13,7 @@ table th, table th * {
 	<br><br>
 	
 	{% if obj.status_type != None %}
-		<!-- display booking info -->
+		<!-- display booking info. aka, There is a booking -->
 		<h3>Venue Information</h3>
 		<table>
 			<tr>
@@ -59,7 +59,7 @@ table th, table th * {
 		{% endif %}
 
 	{% else %}
-		<!-- display availability info -->
+		<!-- display availability info. Aka, there is no booking yet, just availablity -->
 		<h3>Availability Information</h3>
 		<table>
 			<tr>
@@ -73,6 +73,14 @@ table th, table th * {
 				<td>{{ obj.location }}</td>
 			</tr>
 		</table>
+		
+		<br><br>
+		
+		<!-- Delete button to delete availability (assuming it's not associated with a booking-->
+		<form method='POST'> {% csrf_token %}
+			<input type='submit' name='delete' value='Delete' />
+		</form>
+		
 	{% endif %}
 
 
