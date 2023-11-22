@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from . forms import LoginForm
+from . forms import LoginForm, RegForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User, Permission
 from django.db import connection
@@ -52,17 +52,18 @@ def register_view(request, *args, **kwargs):
     #check to see if the submit button was pressed
     if request.method == "POST":
         #initialize the form object
-        form = UserCreationForm(request.POST)
+        cred_form = UserCreationForm(request.POST)
+        info_form = RegForm(request.POST)
         
         #Data is valid (data types are correct)
-        if form.is_valid():
+        if cred_form.is_valid():
             #this will register the user using djangos system
-            #form.save() ***Uncomment when register is finished***
+            #cred_form.save() ***Uncomment when register is finished***
             
             #now that the user is registered, we will login
             #break out data
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password1']
+            username = cred_form.cleaned_data['username']
+            password = cred_form.cleaned_data['password1']
             
             #*** add permission
             
@@ -76,11 +77,39 @@ def register_view(request, *args, **kwargs):
             return redirect('/')
                 
     else:
-        #This else handles initail vist to page (ei, Get request)
-        form = UserCreationForm()
+        #This else handles initail vist to page (ie, Get request)
+        cred_form = UserCreationForm()
+        info_form = RegForm(initial={'role':'perform', 'venue':0}) #set default value
+        
+        #get list from database
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM Genre")
+        
+        #reformat result to work in choicefield
+        genre_list=[x for x in cursor.fetchall()]
+        
+        #store in the Genre choice field
+        info_form.fields['genre'].choices=genre_list
+
+        #get list from database
+        cursor.execute("SELECT venue_ID, name FROM Venue")
+        
+        #reformat result to work in choicefield.
+        #add the option to create a new venue. This option is value 0, since the first ID in the table is 1
+        venue_list=[(0,'Create New Venue')]+[x for x in cursor.fetchall()]
+        
+        #store in the Genre choice field
+        info_form.fields['venue'].choices=venue_list
+
+        #change some labels to make it readable
+        info_form.fields['displayname'].label='Display Name'
+        info_form.fields['venuename'].label='Venue Name'
+        info_form.fields['venueemail'].label='Venue Email'
+        info_form.fields['venueaddress'].label='Venue Address'
+        info_form.fields['venuephone'].label='Venue Phone'
     
     #wrap the form in a dict to send out for rendering
-    context = {'form':form}
+    context = {'cred':cred_form, 'info':info_form}
     
     return render(request, 'register.html',context)
 

@@ -1,12 +1,68 @@
 {% extends "base.html" %}
 
 {% block content %}
+
 	<h1> Register</h1>
 	<br><br>
 
 	<form method='POST'> {% csrf_token %}
-	{{ form.as_p }}
+	{{ cred.as_p }}
+	{{ info.as_p }}
 	<input type='submit' value='Submit' />
 	</form>
+	
+	<script>
+		const roleEle = document.getElementById('id_role')
+		const venueEle = document.getElementById('id_venue')
+		
+		//set intial values
+		var bookView='none'; //defualt is to not show venue fields
+		
+		//hide or show fields depending on what's currently selected.
+		switchrole();
+		switchcreatevenue();
+		
+		//initial listeners
+		roleEle.addEventListener('change',switchrole);
+		venueEle.addEventListener('change',switchcreatevenue);
+		
+		//shows or hides venue data fields depending on what's in the venue dropdown
+		function switchcreatevenue()
+		{
+			let createnewView = null;//shows all elements
+			
+			if(venueEle.value == "0" && bookView == null)
+				createnewView=null; //shows all venue data fields options
+			else
+				createnewView='none'; //hides all venue data fields options
+
+			//apply to all elements
+			document.getElementById('id_venuename').parentElement.style.display = createnewView;
+			document.getElementById('id_venueemail').parentElement.style.display = createnewView;
+			document.getElementById('id_venueaddress').parentElement.style.display = createnewView;
+			document.getElementById('id_venuephone').parentElement.style.display = createnewView;
+		}
+		
+		//shows or hides performer and booker data fields depending on what's in the role dropdown
+		function switchrole()
+		{
+			let performView = null;//shows all elements
+			bookView = null;//shows all elements
+			
+			if(roleEle.value == "perform")
+				bookView='none'; //hides all booker options
+			else if(roleEle.value == "book")
+				performView='none'; //hides all booker options
+
+			//apply to all elements
+			document.getElementById('id_genre').parentElement.style.display = performView;
+			document.getElementById('id_description').parentElement.style.display = performView;
+			document.getElementById('id_rate').parentElement.style.display = performView;
+			document.getElementById('id_venue').parentElement.style.display = bookView;
+			
+			//show or hide the rest of the bookers view depending on what's selected in the venue dropdown
+			switchcreatevenue();
+		}
+	</script>
 
 {% endblock %}

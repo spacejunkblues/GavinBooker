@@ -213,7 +213,7 @@ def get_performer_details(request, id):
        
         #There is no status, so it's just an availbility at this point
         #allow performer to delete
-        else:
+        elif 'delete' in request.POST.keys():
             #Delete selected availability
             cursor.execute("DELETE FROM Availability \
                             WHERE availability_ID = %s",
