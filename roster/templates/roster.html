@@ -15,28 +15,32 @@ table th, table th * {
 	<!-- display roster info -->
 	<table>
 		<tr>
-			<th>Name</th>
-			<th>Rate</th>
-			<th>Email</th>
-			<th>Phone Number</th>
-			<th>Genre</th>
+			<th>Name&nbsp&nbsp</th>
+			<th>Rate&nbsp&nbsp</th>
+			<th>Email&nbsp&nbsp</th>
+			<th>Phone Number&nbsp&nbsp</th>
+			<th>Genre&nbsp&nbsp</th>
 			<th>Description</th>
 		</tr>
 		{% for performer in roster%}
 			<tr>
 				<td>
 					<a href="/roster/{{ performer.performer_id }}">
-					{{ performer.displayname }}
+					{{ performer.displayname }}&nbsp&nbsp
 					</a>
 				</td>
-				<td>{{ performer.rate }}</td>
-				<td>{{ performer.email }}</td>
-				<td>{{ performer.phone_number }}</td>
-				<td>{{ performer.genre_type }}</td>
+				<td>{{ performer.rate }}&nbsp&nbsp</td>
+				<td>{{ performer.email }}&nbsp&nbsp</td>
+				<td>{{ performer.phone_number }}&nbsp&nbsp</td>
+				<td>{{ performer.genre_type }}&nbsp&nbsp</td>
 				<td>{{ performer.description }}</td>
 			</tr>
 		{% endfor %}
 	</table>
+	<form method='POST'> {% csrf_token %}
+	{{ form }}
+	<input type='submit' value='Add' />
+	</form>
 
 		
 

@@ -101,6 +101,8 @@ def register_view(request, *args, **kwargs):
                 role_id=1
             elif info_form.cleaned_data['role'] == 'book':
                 role_id=2
+            else:
+                return redirect('/')
             
             #store user "info"
             #get connection from database
@@ -138,7 +140,7 @@ def register_view(request, *args, **kwargs):
             
 
             #insert booker fields into database
-            if role_id==2:            
+            elif role_id==2:            
                 #get venue_id
                 venue_id=info_form.cleaned_data['venue']
                 
@@ -162,13 +164,18 @@ def register_view(request, *args, **kwargs):
                                     [venue_id,
                                     user_id])
             
-            
-            #now that the user is registered, we will login
-            #*** add permission
-            
             #query django authication system
             user = authenticate(request, username=username, password=password)
             
+            #set permission based on role
+            if role_id==1:
+                permission = permission = Permission.objects.get(name='Can Perform')
+            elif role_id==2:
+                permission = permission = Permission.objects.get(name='Can Book')
+                
+            #register the user permission
+            user.user_permissions.add(permission)
+        
             #Valid user, query django login system
             login(request, user)
                 
