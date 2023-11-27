@@ -4,7 +4,16 @@
 
 	<h1> Register</h1>
 	<br><br>
-
+	
+	<style>
+	label {
+		vertical-align: top;
+	}
+	.errorlist{
+		color: red;
+	}
+	</style>
+	
 	<form method='POST'> {% csrf_token %}
 	{{ cred.as_p }}
 	{{ info.as_p }}

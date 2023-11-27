@@ -48,6 +48,37 @@ def logout_view(request, *args, **kwargs):
     logout(request)
     return redirect('/users/login_user')
 
+#helper function that loads data into choice fields and formats labels
+#helps the register_view function
+def load_reg_form(info_form):
+    #get list from database
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM Genre")
+
+    #reformat result to work in choicefield
+    genre_list=[x for x in cursor.fetchall()]
+
+    #store in the Genre choice field
+    info_form.fields['genre'].choices=genre_list
+
+    #get list from database
+    cursor.execute("SELECT venue_ID, name FROM Venue")
+
+    #reformat result to work in choicefield.
+    #add the option to create a new venue. This option is value 0, since the first ID in the table is 1
+    venue_list=[(0,'Create New Venue')]+[x for x in cursor.fetchall()]
+
+    #store in the Genre choice field
+    info_form.fields['venue'].choices=venue_list
+
+    #change some labels to make it readable
+    info_form.fields['displayname'].label='Display Name'
+    info_form.fields['venuename'].label='Venue Name'
+    info_form.fields['venueemail'].label='Venue Email'
+    info_form.fields['venueaddress'].label='Venue Address'
+    info_form.fields['venuephone'].label='Venue Phone'
+    return
+
 def register_view(request, *args, **kwargs):
     #check to see if the submit button was pressed
     if request.method == "POST":
@@ -55,16 +86,84 @@ def register_view(request, *args, **kwargs):
         cred_form = UserCreationForm(request.POST)
         info_form = RegForm(request.POST)
         
+        #format reg form
+        load_reg_form(info_form)
+        
         #Data is valid (data types are correct)
-        if cred_form.is_valid():
+        if cred_form.is_valid() and info_form.is_valid():
             #this will register the user using djangos system
-            #cred_form.save() ***Uncomment when register is finished***
+            cred_form.save()
             
-            #now that the user is registered, we will login
-            #break out data
+            #break out user data
             username = cred_form.cleaned_data['username']
             password = cred_form.cleaned_data['password1']
+            if info_form.cleaned_data['role'] == 'perform':
+                role_id=1
+            elif info_form.cleaned_data['role'] == 'book':
+                role_id=2
             
+            #store user "info"
+            #get connection from database
+            cursor = connection.cursor()
+            
+            #get django ID from the newly created user
+            cursor.execute("SELECT id \
+                            FROM auth_user \
+                            WHERE username = %s",[username])
+            django_id = cursor.fetchone()
+            
+            #insert fields into base
+            cursor.execute("INSERT INTO User_tbl  \
+                            VALUES (DEFAULT, %s, %s, %s, %s, %s);",
+                                [role_id,
+                                django_id,
+                                info_form.cleaned_data['displayname'],
+                                info_form.cleaned_data['email'],
+                                info_form.cleaned_data['phone']])
+            
+            #get user ID from the newly inserted user_tbl entry
+            cursor.execute("SELECT user_id \
+                            FROM User_tbl \
+                            WHERE django_id = %s",[django_id])
+            user_id = cursor.fetchone()
+                            
+            #insert performer fields into database
+            if role_id==1:
+                cursor.execute("INSERT INTO Performer  \
+                                VALUES (DEFAULT, %s, %s, %s, %s);",
+                                    [info_form.cleaned_data['genre'],
+                                    user_id,
+                                    info_form.cleaned_data['description'],
+                                    info_form.cleaned_data['rate']])
+            
+
+            #insert booker fields into database
+            if role_id==2:            
+                #get venue_id
+                venue_id=info_form.cleaned_data['venue']
+                
+                #if venue_id is 0, that means a new venue must be created
+                if info_form.cleaned_data['venue']=='0':
+                    cursor.execute("INSERT INTO Venue  \
+                                    VALUES (DEFAULT, %s, %s, %s, %s);",
+                                        [info_form.cleaned_data['venuename'],
+                                        info_form.cleaned_data['venueemail'],
+                                        info_form.cleaned_data['venueaddress'],
+                                        info_form.cleaned_data['venuephone']])
+                                        
+                    #get venue_id
+                    cursor.execute("SELECT venue_id \
+                                    FROM Venue \
+                                    WHERE name = %s",[info_form.cleaned_data['venuename']])
+                    venue_id = cursor.fetchone()
+            
+                cursor.execute("INSERT INTO Booker  \
+                                VALUES (DEFAULT, %s, %s);",
+                                    [venue_id,
+                                    user_id])
+            
+            
+            #now that the user is registered, we will login
             #*** add permission
             
             #query django authication system
@@ -79,34 +178,10 @@ def register_view(request, *args, **kwargs):
     else:
         #This else handles initail vist to page (ie, Get request)
         cred_form = UserCreationForm()
-        info_form = RegForm(initial={'role':'perform', 'venue':0}) #set default value
+        info_form = RegForm(initial={'role':'perform', 'venue':0, 'rate':0}) #set default value
         
-        #get list from database
-        cursor = connection.cursor()
-        cursor.execute("SELECT * FROM Genre")
-        
-        #reformat result to work in choicefield
-        genre_list=[x for x in cursor.fetchall()]
-        
-        #store in the Genre choice field
-        info_form.fields['genre'].choices=genre_list
-
-        #get list from database
-        cursor.execute("SELECT venue_ID, name FROM Venue")
-        
-        #reformat result to work in choicefield.
-        #add the option to create a new venue. This option is value 0, since the first ID in the table is 1
-        venue_list=[(0,'Create New Venue')]+[x for x in cursor.fetchall()]
-        
-        #store in the Genre choice field
-        info_form.fields['venue'].choices=venue_list
-
-        #change some labels to make it readable
-        info_form.fields['displayname'].label='Display Name'
-        info_form.fields['venuename'].label='Venue Name'
-        info_form.fields['venueemail'].label='Venue Email'
-        info_form.fields['venueaddress'].label='Venue Address'
-        info_form.fields['venuephone'].label='Venue Phone'
+        #format reg form
+        load_reg_form(info_form)
     
     #wrap the form in a dict to send out for rendering
     context = {'cred':cred_form, 'info':info_form}
