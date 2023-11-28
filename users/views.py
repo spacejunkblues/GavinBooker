@@ -351,12 +351,12 @@ def delete_dummy(request, *args, **kwargs):
     #query django authication system
     user = authenticate(request, username='nexttswift', password='1qaz')
     
-    #check to make sure dummy users aren't already loaded
+    #check to make sure dummy users aren't already deleted
     if user is not None:
     
         #this will remove all FK contraints
-        for i in range(32):
-            update_dummy_id(i+1,1)
+        #for i in range(32):
+        #    update_dummy_id(i+1,1)
             
         #delete performers
         user = User.objects.get(username='nexttswift')
@@ -397,8 +397,8 @@ def delete_dummy(request, *args, **kwargs):
         user.delete()
         user = User.objects.get(username='edmislife')
         user.delete()
-        user = User.objects.get(username='mags')
-        user.delete()
+        #user = User.objects.get(username='mags')
+        #user.delete()
         
         
         #delete bookers
@@ -420,15 +420,15 @@ def delete_dummy(request, *args, **kwargs):
         user.delete()
         user = User.objects.get(username='james')
         user.delete()
-        user = User.objects.get(username='stark')
-        user.delete()
+        #user = User.objects.get(username='stark')
+        #user.delete()
         
         
         #delete admin
-        user = User.objects.get(username='admin')
-        user.delete()
-        user = User.objects.get(username='daisy')
-        user.delete()
+        #user = User.objects.get(username='admin')
+        #user.delete()
+        #user = User.objects.get(username='daisy')
+        #user.delete()
         
         return redirect('/admin')
 
