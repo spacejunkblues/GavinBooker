@@ -37,7 +37,7 @@ class RegForm(forms.Form):
     venuename = forms.CharField(max_length=70, strip=True, required=False)
     
     #email (If booker and creating new venue)
-    venueemail = forms.EmailField(max_length=20, required=False)
+    venueemail = forms.EmailField(max_length=50, required=False)
     
     #address (If booker and creating new venue)
     venueaddress = forms.CharField(max_length=50, strip=True, required=False)
