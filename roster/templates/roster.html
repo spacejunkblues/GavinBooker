@@ -2,37 +2,29 @@
 
 {% block content %}
 
-<style>
-
-table th, table th * {
-
-    text-align: left;
-}
-</style>
-
 	<h1>Roster</h1>
 
 	<!-- display roster info -->
-	<table>
+	<table class="tablelist">
 		<tr>
-			<th>Name&nbsp&nbsp</th>
-			<th>Rate&nbsp&nbsp</th>
-			<th>Email&nbsp&nbsp</th>
-			<th>Phone Number&nbsp&nbsp</th>
-			<th>Genre&nbsp&nbsp</th>
+			<th>Name</th>
+			<th>Hr Rate</th>
+			<th>Email</th>
+			<th>Phone Number</th>
+			<th>Genre</th>
 			<th>Description</th>
 		</tr>
 		{% for performer in roster%}
 			<tr>
 				<td>
 					<a href="/roster/{{ performer.performer_id }}">
-					{{ performer.displayname }}&nbsp&nbsp
+					{{ performer.displayname }}
 					</a>
 				</td>
-				<td>{{ performer.rate }}&nbsp&nbsp</td>
-				<td>{{ performer.email }}&nbsp&nbsp</td>
-				<td>{{ performer.phone_number }}&nbsp&nbsp</td>
-				<td>{{ performer.genre_type }}&nbsp&nbsp</td>
+				<td>{{ performer.rate }}</td>
+				<td>{{ performer.email }}</td>
+				<td>{{ performer.phone_number }}</td>
+				<td>{{ performer.genre_type }}</td>
 				<td>{{ performer.description }}</td>
 			</tr>
 		{% endfor %}

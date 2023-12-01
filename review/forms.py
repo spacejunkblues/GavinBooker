@@ -5,4 +5,4 @@ class ReviewForm(forms.Form):
     
     ratingOptions = ((1,'1'),(2,'2'),(3,'3'),(4,'4'),(5,'5'))
     rating = forms.ChoiceField(choices=ratingOptions)
-    comment = forms.CharField()
+    comment = forms.CharField(widget=forms.Textarea,max_length=200)

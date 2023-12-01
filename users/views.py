@@ -48,7 +48,7 @@ def logout_view(request, *args, **kwargs):
     logout(request)
     return redirect('/users/login_user')
 
-#helper function that loads data into choice fields and formats labels
+#helper function that loads data into choice fields
 #helps the register_view function
 def load_reg_form(info_form):
     #get list from database
@@ -71,12 +71,6 @@ def load_reg_form(info_form):
     #store in the Genre choice field
     info_form.fields['venue'].choices=venue_list
 
-    #change some labels to make it readable
-    info_form.fields['displayname'].label='Display Name'
-    info_form.fields['venuename'].label='Venue Name'
-    info_form.fields['venueemail'].label='Venue Email'
-    info_form.fields['venueaddress'].label='Venue Address'
-    info_form.fields['venuephone'].label='Venue Phone'
     return
 
 def register_view(request, *args, **kwargs):
