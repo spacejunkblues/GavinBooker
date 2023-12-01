@@ -11,6 +11,7 @@ class RegForm(forms.Form):
     
     #display name
     displayname = forms.CharField(max_length=20, strip=True,
+                                label='Display Name',
                                 help_text="This name is how the public will see you. Can't be changed after registration.. yet")
     
     #email
@@ -29,22 +30,22 @@ class RegForm(forms.Form):
     description = forms.CharField(widget=forms.Textarea, max_length=200, required=False)
     
     #rate(If Performer)
-    rate = forms.DecimalField(max_digits=7, decimal_places=2, required=False)
+    rate = forms.DecimalField(max_digits=7, decimal_places=2, required=False, label="Hourly Rate")
     
     #Venue (drop down or create new) (If booker)
     venue = forms.ChoiceField(required=False)
     
     #Name (If booker and creating new venue)
-    venuename = forms.CharField(max_length=70, strip=True, required=False)
+    venuename = forms.CharField(max_length=70, strip=True, required=False, label='Venue Name')
     
     #email (If booker and creating new venue)
-    venueemail = forms.EmailField(max_length=50, required=False)
+    venueemail = forms.EmailField(max_length=50, required=False, label='Venue Email')
     
     #address (If booker and creating new venue)
-    venueaddress = forms.CharField(max_length=50, strip=True, required=False)
+    venueaddress = forms.CharField(max_length=50, strip=True, required=False, label='Venue Address')
     
     #phone number (If booker and creating new venue)
-    venuephone = forms.CharField(max_length=15, strip=True, required=False)
+    venuephone = forms.CharField(max_length=15, strip=True, required=False, label='Venue Phone')
     
     #validation function to make sure field isn't blank
     def clean_venuename(self):

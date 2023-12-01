@@ -2,21 +2,13 @@
 
 {% block content %}
 
-<style>
-
-table th, table th * {
-
-    text-align: left;
-}
-</style>
-
 	<br><br>
 	
 	{% if obj.status_type != None %}
 		<!-- display booking info -->
 
 		<h3>Booking Information</h3>
-		<table>
+		<table  class="tablelist">
 			<tr>
 				<th>Status</th>
 				<th>Performer</th>
@@ -45,13 +37,13 @@ table th, table th * {
 	{% else %}
 		<!-- display availability info -->
 		<h3>Preformer Availability Information</h3>
-		<table>
+		<table  class="tablelist">
 			<tr>
 				<th>Performer</th>
 				<th>Start Time</th>
 				<th>End Time</th>
 				<th>Location</th>
-				<th>Asking Rate</th>
+				<th>Asking Hr Rate</th>
 			</tr>
 			<tr>
 				<td>{{ obj.displayname }}</td>

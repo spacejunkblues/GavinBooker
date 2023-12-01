@@ -6,11 +6,11 @@ class TimeInput(forms.TimeInput):
 class AddAvailabilityForm(forms.Form):
     start = forms.TimeField(widget=TimeInput)
     end = forms.TimeField(widget=TimeInput)
-    location = forms.CharField()
+    location = forms.CharField(max_length=50)
     
     
 class BookingForm(forms.Form):
     start = forms.TimeField(widget=TimeInput)
     end = forms.TimeField(widget=TimeInput)
-    payment = forms.FloatField()
-    condition = forms.CharField()
+    payment = forms.DecimalField(max_digits=7, decimal_places=2)
+    condition = forms.CharField(widget=forms.Textarea,max_length=200)

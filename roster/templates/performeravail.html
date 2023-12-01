@@ -2,19 +2,12 @@
 
 {% block content %}
 
-<style>
-
-table th, table th * {
-
-    text-align: left;
-}
-</style>
-
 	<h1>Performer's Availability</h1>
 
 	<!-- display roster info -->
-	<h3>{{ info.displayname }} ${{ info.rate }}</h3>
-	<table>
+	<h3>{{ info.displayname }} (Hourly Rate ${{ info.rate }})</h3>
+	
+	<table class="tablelist">
 		<tr>
 			<th>Location</th>
 			<th>Start Time</th>
