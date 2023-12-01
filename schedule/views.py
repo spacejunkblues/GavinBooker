@@ -372,27 +372,23 @@ def add_availability_view(request, year, month, day, *args, **kwargs):
                                       int(end.strftime('%H')),
                                       int(end.strftime('%M')))
             
-            #check that end is after start
-            if start >= end:
-                messages.success(request, ('Start time must be before end time'))
 
-            else:
-                #Connect to the database
-                cursor = connection.cursor()
-                
-                #get performer id from the django ID
-                cursor.execute("SELECT performer_ID \
-                                FROM Performer NATURAL JOIN User_tbl \
-                                WHERE django_ID = %s;",[request.user.id])
-                performer_id = cursor.fetchone()
-                
-                #insert availability
-                cursor.execute("INSERT INTO Availability  \
-                                VALUES (DEFAULT, %s, %s, %s, %s);",
-                                [performer_id, start, end, location])
-                
-                #redirect to calendar view
-                return redirect('/schedule/' + str(year) + '/' + str(month))
+            #Connect to the database
+            cursor = connection.cursor()
+            
+            #get performer id from the django ID
+            cursor.execute("SELECT performer_ID \
+                            FROM Performer NATURAL JOIN User_tbl \
+                            WHERE django_ID = %s;",[request.user.id])
+            performer_id = cursor.fetchone()
+            
+            #insert availability
+            cursor.execute("INSERT INTO Availability  \
+                            VALUES (DEFAULT, %s, %s, %s, %s);",
+                            [performer_id, start, end, location])
+            
+            #redirect to calendar view
+            return redirect('/schedule/' + str(year) + '/' + str(month))
                 
     else:
         #This else handles initail vist to page (ei, Get request)
