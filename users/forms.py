@@ -10,7 +10,8 @@ class RegForm(forms.Form):
     rolechoice = [("perform", "Performer"),("book","Booker")]
     
     #display name
-    displayname = forms.CharField(max_length=20, strip=True)
+    displayname = forms.CharField(max_length=20, strip=True,
+                                help_text="This name is how the public will see you. Can't be changed after registration.. yet")
     
     #email
     email = forms.EmailField(max_length=50)

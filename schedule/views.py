@@ -316,17 +316,13 @@ def get_booker_details(request, id):
                                           int(end.strftime('%H')),
                                           int(end.strftime('%M')))
                 
-                #check that end is after start
-                if start >= end:
-                    messages.success(request, ('Start time must be before end time'))
 
-                else:
-                    #Offer the booking to the performer
-                    cursor.execute("CALL bookPerformer(%s,%s,%s,%s,%s,%s)",
-                                    [booker_id, id, payment, condition, start, end])
-                    
-                    #redirect to calendar view
-                    return redirect('/schedule/' + str(year) + '/' + str(month))
+                #Offer the booking to the performer
+                cursor.execute("CALL bookPerformer(%s,%s,%s,%s,%s,%s)",
+                                [booker_id, id, payment, condition, start, end])
+                
+                #redirect to calendar view
+                return redirect('/schedule/' + str(year) + '/' + str(month))
         
     else:
             form = BookingForm()
@@ -386,6 +382,9 @@ def add_availability_view(request, year, month, day, *args, **kwargs):
             cursor.execute("INSERT INTO Availability  \
                             VALUES (DEFAULT, %s, %s, %s, %s);",
                             [performer_id, start, end, location])
+                            
+            #let the performer what the next steps are
+            messages.success(request, ('Your availability is now visible to bookers. Now just wait for an offer!'))
             
             #redirect to calendar view
             return redirect('/schedule/' + str(year) + '/' + str(month))
