@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.db import connection
 from . forms import AddPerformerForm
+from django.contrib import messages
 
 #fucntion provided by Django documentation
 #https://docs.djangoproject.com/en/4.0/topics/db/sql/
@@ -73,10 +74,21 @@ def roster_view(request, *args, **kwargs):
             #get performer_id
             performer_id = info_form.cleaned_data['performers']
             
-            #add performer to the roster
-            cursor.execute("INSERT INTO Roster  \
-                            VALUES (%s, %s);",
+            #make sure peformer isn't already added            
+            #get names from database
+            cursor.execute("SELECT COUNT(*) \
+                            FROM Roster \
+                            WHERE booker_ID = %s AND performer_ID = %s", 
                             [booker_id, performer_id])
+                            
+            #check to see if name taken
+            if cursor.fetchone()[0] > 0:
+                messages.success(request, ("Performer already added to the roster."))
+            else:
+                #add performer to the roster
+                cursor.execute("INSERT INTO Roster  \
+                                VALUES (%s, %s);",
+                                [booker_id, performer_id])
     else:
         #This else handles initail vist to page (ie, Get request)
         info_form = AddPerformerForm() 
