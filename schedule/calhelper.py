@@ -6,6 +6,11 @@ class MonthCal:
         self.month=month
         self.year=year
         
+        #get current day to highlight on calendar
+        self.current_m=datetime.now().month
+        self.current_y=datetime.now().year
+        self.current_d=datetime.now().day
+        
         #init a Calendar object to get dates from
         cal = Calendar(firstweekday=6) #6 is Sunday
         

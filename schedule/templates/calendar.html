@@ -14,55 +14,74 @@ table th, table th * {
 }
 </style>
 
-	<h1> Calendar</h1>
-	<br><a href="/schedule/{{ month.previousyear }}/{{ month.previousmonth }}">previous</a> 
-	<a href="/schedule/{{ month.nextyear }}/{{ month.nextmonth }}">next</a>
+	<br><br><br>
 
-	<h2>{{ month.monthname }} {{ month.year }}</h2>
-	<table style="width:100%">
-	<!-- The header row of the calendar are the days of the week -->
-	<tr>
-	{% for weekday in month.weekdays %}
-		<th>{{weekday}}</th>
-	{% endfor %}
-	</tr>
-	{% for week in month.cal_data %}
-		<!-- This row displays the date of the week -->
-		<tr>	
-		{% for day in week %}
-			<td>
-			{% if day != None %}
-				{{ day.date }} <br>
-			{% endif %}
-			</td>
+	<div style="padding-left:20px; padding-right:20px">
+		<p style="font-size:25px;">{{ month.monthname }} {{ month.year }}
+			<span style="float:right; display: flex;"> &nbsp <span style="font-size:15px; align-self: flex-end;"> 
+				<a href="/schedule/{{ month.previousyear }}/{{ month.previousmonth }}">previous</a> 
+				<a href="/schedule/{{ month.nextyear }}/{{ month.nextmonth }}">next</a> 
+			</span></span>
+		</p> 
+		
+		
+		<table style="width:100%" cellspacing="0">
+		<!-- The header row of the calendar are the days of the week -->
+		<tr>
+		{% for weekday in month.weekdays %}
+			<th>{{weekday}}</th>
 		{% endfor %}
 		</tr>
-		<!-- This row displays all events on each day -->
-		<tr style="height:100px">	
-		{% for day in week %}
-			<!-- This adds events for current day -->
-			<td>
-			{% if day != None %}
-				{% if role != 2 %}<!--  Add button, not for Bookers -->
-					<a href="/schedule/add/{{ month.year }}/{{ month.month }}/{{ day.date }}">Add</a>
+		{% for week in month.cal_data %}
+			<!-- This row displays the date of the week -->
+			<tr>	
+			{% for day in week %}
+				<!-- highlight the day if it's the current day -->
+				{% if month.current_d == day.date and month.current_m == month.month and month.current_y == month.year %}
+				<td bgcolor="E7E7E7"><!--gray-->
+				{% else %}
+				<td>
+				{% endif %}
+				
+				<!-- display day as number -->
+				{% if day != None %}
+					{{ day.date }} <br>
+				{% endif %}
+				</td>
+			{% endfor %}
+			</tr>
+			<!-- This row displays all events on each day -->
+			<tr style="height:100px">	
+			{% for day in week %}
+				<!-- highlight the day if it's the current day -->
+				{% if month.current_d == day.date and month.current_m == month.month and month.current_y == month.year %}
+				<td bgcolor="E7E7E7"><!--gray-->
+				{% else %}
+				<td>
+				{% endif %}
+				
+				<!-- This adds events for current day -->
+				{% if day != None %}
+					{% if role != 2 %}<!--  Add button, not for Bookers -->
+						<a href="/schedule/add/{{ month.year }}/{{ month.month }}/{{ day.date }}">Add</a>
+						<br>
+					{% endif %}
+					{% for event in day.events %}
+						<!-- display availability times -->
+						<a href="/schedule/detail/{{ event.id }}">
+						{{ event.displayname }}				<!--  Performer Name -->
+						{{ event.start }} - {{ event.end }} <!--  times -->
+						{% if event.status != None %}		<!--  Status of booking -->
+							{{ event.status }}
+						{% endif %}</a><br><br>
+					{% endfor %}
 					<br>
 				{% endif %}
-				{% for event in day.events %}
-					<!-- display availability times -->
-					<a href="/schedule/detail/{{ event.id }}">
-					{{ event.displayname }}				<!--  Performer Name -->
-					{{ event.start }} - {{ event.end }} <!--  times -->
-					{% if event.status != None %}		<!--  Status of booking -->
-						{{ event.status }}
-					{% endif %}</a><br><br>
-				{% endfor %}
-				<br>
-			{% endif %}
-			</td>
+				</td>
+			{% endfor %}
+			</tr>
 		{% endfor %}
-		</tr>
-	{% endfor %}
-	</table>
-
+		</table>
+	</div>
 
 {% endblock %}

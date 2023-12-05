@@ -12,26 +12,117 @@ a:active {
 	text-decoration: none;
 }
 .nav-bar {
-	background-color: #808080;
-	padding-top: 20px;
+	background-color: #04571B;   /**/
+	padding-top: 15px;
 	padding-bottom: 20px;
 	padding-left: 20px;
+	font-family: "Arial", "sans-serif";
 }
 .nav-items{
 	color: #F8F8FF;
+	opacity: 1;
+}
+.logo{
+	height: 63px; /* this depends on the padding from nav-bar. This should match the absolute height of the banner*/
+}
+.icon{
+	height: 25px;
+	padding-right: 10px;
+}
+.icon:hover{
+
+	-webkit-filter: blur(5px); /* Safari 6.0 - 9.0 */
+	filter: blur(1px);
+	opacity: 1;
+}
+
+.menu{
+	position: absolute;
+	margin: auto;
+	top: 63px;
+	display: block;
+	background-color: #04571B;
+	background-color: rgba(4,87,27,.7);
+	width: 200px;
+	height: 100px;
 }
 </style>
 
+{% load static %}
+
+<img align="right" style="padding-right:20px;" class="logo" src="{% static 'images/gb_logo.PNG' %}">
 <div class="nav-bar">
 	{% if user.is_authenticated %}
-		<div style="color:ghostwhite; display:inline-block;">{{ user.username }}</div>
-		<a href="/" class="nav-items">Calendar</a>
+		<!--The three bar icon-->
+		<div class="header-icons" id="MyLogo">
+			<a href="javascript:ShowUserMenu();">
+				<img class="icon" src="{% static 'images/hamburger_icon.PNG' %}" alt="Profile"  align="Left">
+			</a>
+			<div class="menu" id="MyPopupMenu">
+				<div id="myName">
+					<div class="nav-items">Logged in as {{ user.username }}</div>
+				</div>
+				<div id="myUserMenu"">
+					<a href="/users/logout_user" class="nav-items">Logout</a>
+				</div>
+			</div>
+		</div>
+		
+		<!--This is the Calendar Icon-->
+		<a href="/" class="nav-items"><img class='icon' src="{% static 'images/calendar_icon.PNG' %}"></a>
+		
+		<!--This is the Roster Icon-->
 		{% if perms.auth.can_book %}
-			<a href="/roster" class="nav-items">Roster</a>
+			<a href="/roster" class="nav-items"><img class='icon' src="{% static 'images/roster_icon.PNG' %}"></a>
 		{% endif %}
-		<a href="/users/logout_user" class="nav-items">Logout</a>
+		
 	{% else %}
-		<a href="/users/login_user" class="nav-items">Login</a>
+		<a href="/users/login_user" class="nav-items"><img src="" class="icon">Login</a>
 		<a href="/users/register_user" class="nav-items">Register</a>
 	{% endif %}
 </div>
+
+<script>
+//display user popup menu
+var popup = document.getElementById("MyPopupMenu");
+var threebarclicked;
+
+//set initial varaibles
+popup.style.display="none";	
+
+//init listeners
+window.onclick=function() {AnyClick()};
+document.getElementById('MyThreeBar').addEventListener('click', ThreeBarClickHandler); 
+
+//displays user perfences drop down
+function ShowUserMenu()
+{
+	if(popup.style.display=="none")
+	{
+		popup.style.display="block";
+	}
+	else
+	{
+		popup.style.display="none";
+	}
+}
+
+function ThreeBarClickHandler()
+{
+	threebarclicked=true;
+}
+
+//hide menus when anywhere else on the screen is clicked
+function AnyClick()
+{
+	//three bar nav on the left
+	if(threebarclicked==false)
+	{
+		popup.style.display="none";
+	}
+	else
+	{
+		threebarclicked=false;
+	}
+}
+</script>
