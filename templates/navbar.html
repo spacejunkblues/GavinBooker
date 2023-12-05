@@ -20,7 +20,6 @@ a:active {
 }
 .nav-items{
 	color: #F8F8FF;
-	opacity: 1;
 }
 .logo{
 	height: 63px; /* this depends on the padding from nav-bar. This should match the absolute height of the banner*/
@@ -33,7 +32,6 @@ a:active {
 
 	-webkit-filter: blur(5px); /* Safari 6.0 - 9.0 */
 	filter: blur(1px);
-	opacity: 1;
 }
 
 .menu{
@@ -54,7 +52,7 @@ a:active {
 <div class="nav-bar">
 	{% if user.is_authenticated %}
 		<!--The three bar icon-->
-		<div class="header-icons" id="MyLogo">
+		<div class="header-icons" id="MyThreeBar">
 			<a href="javascript:ShowUserMenu();">
 				<img class="icon" src="{% static 'images/hamburger_icon.PNG' %}" alt="Profile"  align="Left">
 			</a>
@@ -107,12 +105,14 @@ function ShowUserMenu()
 	}
 }
 
+//used to signal to anyclick that the three bar was clicked
 function ThreeBarClickHandler()
 {
 	threebarclicked=true;
 }
 
 //hide menus when anywhere else on the screen is clicked
+//exception is the three bar menu, if that is clicked, do nothing since ShowUserMenu handles toggleing
 function AnyClick()
 {
 	//three bar nav on the left
