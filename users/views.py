@@ -172,6 +172,12 @@ def register_view(request, *args, **kwargs):
         
             #Valid user, query django login system
             login(request, user)
+            
+            #Give new user a welcome message
+            if role_id==1:
+                messages.success(request, ('Welcome to Gavin Booking! Click on the "Add" buttons below to start showing bookers when you are available!'))
+            elif role_id==2:
+                messages.success(request, ('Welcome to Gavin Booking! Click on the Scroll button above to start adding performers to your Roster!'))
                 
             #User is logged in
             return redirect('/')
