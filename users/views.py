@@ -131,7 +131,18 @@ def register_view(request, *args, **kwargs):
                                     user_id,
                                     info_form.cleaned_data['description'],
                                     info_form.cleaned_data['rate']])
-            
+                                    
+                #get performer ID from the newly inserted entry
+                cursor.execute("SELECT performer_id \
+                            FROM Performer \
+                            WHERE user_id = %s",[user_id])  
+                performer_id = cursor.fetchone()
+                            
+                #log average gigs performed per month. This will only be used in beta testing
+                cursor.execute("INSERT INTO Gigs  \
+                                VALUES (DEFAULT, %s, %s);",
+                                    [performer_id,
+                                    info_form.cleaned_data['averagegigs']])
 
             #insert booker fields into database
             elif role_id==2:            
@@ -163,9 +174,9 @@ def register_view(request, *args, **kwargs):
             
             #set permission based on role
             if role_id==1:
-                permission = permission = Permission.objects.get(name='Can Perform')
+                permission = Permission.objects.get(name='Can Perform')
             elif role_id==2:
-                permission = permission = Permission.objects.get(name='Can Book')
+                permission = Permission.objects.get(name='Can Book')
                 
             #register the user permission
             user.user_permissions.add(permission)
@@ -185,7 +196,7 @@ def register_view(request, *args, **kwargs):
     else:
         #This else handles initail vist to page (ie, Get request)
         cred_form = UserCreationForm()
-        info_form = RegForm(initial={'role':'perform', 'venue':0, 'rate':0}) #set default value
+        info_form = RegForm(initial={'role':'perform', 'venue':0}) #set default value
         
         #format reg form
         load_reg_form(info_form)

@@ -9,12 +9,14 @@
 	<form method='POST'> {% csrf_token %}
 	{{ cred.as_p }}
 	{{ info.as_p }}
-	<input type='submit' value='Submit' />
+	<input id='submit' type='submit' value='Submit' />
 	</form>
 	
 	<script>
 		const roleEle = document.getElementById('id_role')
 		const venueEle = document.getElementById('id_venue')
+		const submitEle = document.getElementById('submit')
+		var agreed = false;
 		
 		//set intial values
 		var bookView='none'; //defualt is to not show venue fields
@@ -26,6 +28,7 @@
 		//initial listeners
 		roleEle.addEventListener('change',switchrole);
 		venueEle.addEventListener('change',switchcreatevenue);
+		submitEle.addEventListener('click',agreetext);
 		
 		//shows or hides venue data fields depending on what's in the venue dropdown
 		function switchcreatevenue()
@@ -59,10 +62,18 @@
 			document.getElementById('id_genre').parentElement.style.display = performView;
 			document.getElementById('id_description').parentElement.style.display = performView;
 			document.getElementById('id_rate').parentElement.style.display = performView;
+			document.getElementById('id_averagegigs').parentElement.style.display = performView;
 			document.getElementById('id_venue').parentElement.style.display = bookView;
 			
 			//show or hide the rest of the bookers view depending on what's selected in the venue dropdown
 			switchcreatevenue();
+		}
+		
+		function agreetext()
+		{
+			if(!agreed)
+				alert("Thank you for being a part of the first Beta test of “Gavin Booking” .The personal information you have entered will be used by music venues to contact you if needed or by the Gavin Booking staff to collect information to improve the site. This contact information will not be used for any other purpose without first requesting consent.");
+			agreed=true;
 		}
 	</script>
 
