@@ -30,7 +30,11 @@ class RegForm(forms.Form):
     description = forms.CharField(widget=forms.Textarea, max_length=200, required=False)
     
     #rate(If Performer)
-    rate = forms.DecimalField(max_digits=7, decimal_places=2, required=False, label="Hourly Rate")
+    rate = forms.DecimalField(max_digits=7, decimal_places=2, label="Hourly Rate")
+    
+    #Average Gigs per month (If Performer)
+    averagegigs = forms.IntegerField(label='Average Gigs Per Month',
+                                    help_text="How many performances do you normally conduct each month?")
     
     #Venue (drop down or create new) (If booker)
     venue = forms.ChoiceField(required=False)

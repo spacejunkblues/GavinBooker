@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.db import connection
 from . forms import AddPerformerForm
 from django.contrib import messages
+from metrics.loghelper import log_visit
 
 #fucntion provided by Django documentation
 #https://docs.djangoproject.com/en/4.0/topics/db/sql/
@@ -55,6 +56,9 @@ def roster_view(request, *args, **kwargs):
     #don't let performers view the roster
     if get_role(request.user.id) == 1:
         return redirect('/schedule')
+        
+    #log the visit
+    log_visit(request.user.id,"Roster", None)
     
     #get booker id
     booker_id = get_booker_id(request.user.id)
@@ -113,6 +117,9 @@ def performer_availability_view(request, id, *args, **kwargs):
     #don't let performers view the roster
     if get_role(request.user.id) == 1:
         return redirect('/schedule')
+    
+    #log the visit
+    log_visit(request.user.id,"RosterPerformer", id)
     
     #get booker id
     booker_id = get_booker_id(request.user.id)

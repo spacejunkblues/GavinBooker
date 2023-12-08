@@ -5,6 +5,7 @@ from django.db import connection
 from . forms import AddAvailabilityForm, BookingForm
 import datetime
 from django.contrib import messages
+from metrics.loghelper import log_visit
 
 #fucntion provided by Django documentation
 #https://docs.djangoproject.com/en/4.0/topics/db/sql/
@@ -49,7 +50,6 @@ def format_addevent(cursor, cal, include_status=True, include_displayname=False)
         else: 
             #availabilities
             cal.addEvent(event_id, day, start, end, displayname)
-
 
 def add_performer_events(id, cal):
     #Connect to the database
@@ -116,10 +116,13 @@ def get_role(id):
     cursor.execute("SELECT role_ID FROM User_tbl \
                     WHERE django_ID = %s",[id])
     
-    return cursor.fetchone()[0]
+    return cursor.fetchone()[0]    
 
 @login_required(login_url='/users/login_user')
 def calendar_view(request, year ='', month='', *args, **kwargs):
+    #log the visit
+    log_visit(request.user.id,"Calendar", None)
+
     #get month object
     if year != '' and month != '':
         cal = MonthCal(year = year, month = month)
@@ -334,13 +337,14 @@ def get_booker_details(request, id):
 
 @login_required(login_url='/users/login_user')
 def detail_view(request, id, *args, **kwargs):
+    #log the visit
+    log_visit(request.user.id,"Detail", id)
+    
     if get_role(request.user.id) == 1:#Performers
         return get_performer_details(request,id)
     else: #Bookers
         return get_booker_details(request,id)
     
-
-
 
 @login_required(login_url='/users/login_user')
 def add_availability_view(request, year, month, day, *args, **kwargs):

@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.db import connection
 from . forms import ReviewForm
+from metrics.loghelper import log_visit
 
 #fucntion provided by Django documentation
 #https://docs.djangoproject.com/en/4.0/topics/db/sql/
@@ -32,6 +33,9 @@ def review_view(request,id, *args, **kwargs):
     if not reviewable(id):
         return redirect('/review')
         
+    #log the visit
+    log_visit(request.user.id,"ReviewBooking",id)
+    
     #Connect to the database
     cursor = connection.cursor()
     
@@ -61,8 +65,11 @@ def review_view(request,id, *args, **kwargs):
     return render(request, 'submit_review.html', context)
     
 
-
+#this is the landing page where all shows are displayed
 def allbookings_view(request, *args, **kwargs):
+    #log the visit
+    log_visit(request.user.id,"Review",None)
+    
     #Connect to the database
     cursor = connection.cursor()
     
