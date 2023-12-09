@@ -50,6 +50,9 @@ def report_problem(request, *args, **kwargs):
                 #formats as a dict in a list aka   [{'fieldname':'value', 'username':'greg'}]
                 userData=dictfetchall(cursor)
             
+            #build message
+            message = ""
+            
             #send email
             send_mail(
                 "Subject here", #subject
