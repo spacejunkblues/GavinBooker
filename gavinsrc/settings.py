@@ -191,6 +191,24 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 
 #STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+#myaccount.google.com/lesssecureapps
+#unclock capta on google account
+#email Server
+if IS_HEROKU_APP:
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_PORT = '587'
+    EMAIL_HOST_USER = 'gavinbooking@gmail.com'
+    EMAIL_HOST_PASSWORD = 'srpdjmykvozuvrow'
+    EMAIL_USE_TSL = True
+    #EMAIL_USE_SSL = False
+else:
+    EMAIL_HOST = 'localhost'
+    EMAIL_PORT = '1025'
+    EMAIL_HOST_USER = ''
+    EMAIL_HOST_PASSWORD = ''
+    EMAIL_USE_TSL = False
+    #EMAIL_USE_SSL = False
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
