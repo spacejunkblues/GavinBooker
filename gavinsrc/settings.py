@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-plfg_2_gi0#(k)v5k5=p0a2y2+@z-+r)pxr*14*wx7u_7zj4)c'
+SECRET_KEY = config('SECRET_KEY')
 
 # The `DYNO` env var is set on Heroku CI, but it's not a real Heroku app, so we have to
 # also explicitly exclude CI:
@@ -191,23 +191,24 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 
 #STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-#myaccount.google.com/lesssecureapps
-#unclock capta on google account
+#setup gmail account with an app password
 #email Server
-if IS_HEROKU_APP:
-    EMAIL_HOST = 'smtp.gmail.com'
-    EMAIL_PORT = '587'
-    EMAIL_HOST_USER = 'gavinbooking@gmail.com'
-    EMAIL_HOST_PASSWORD = 'srpdjmykvozuvrow'
-    EMAIL_USE_TSL = True
-    #EMAIL_USE_SSL = False
-else:
-    EMAIL_HOST = 'localhost'
-    EMAIL_PORT = '1025'
-    EMAIL_HOST_USER = ''
-    EMAIL_HOST_PASSWORD = ''
-    EMAIL_USE_TSL = False
-    #EMAIL_USE_SSL = False
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'gavinbooking@gmail.com'
+EMAIL_HOST_PASSWORD = config('APP_PASSWORD')
+EMAIL_USE_TLS = True
+#EMAIL_USE_SSL = False
+
+#this will send it to the same console
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+#EMAIL_HOST = 'localhost'
+#EMAIL_PORT = '1025'
+#EMAIL_HOST_USER = ''
+#EMAIL_HOST_PASSWORD = ''
+#EMAIL_USE_TLS = False
+#EMAIL_USE_SSL = False
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
