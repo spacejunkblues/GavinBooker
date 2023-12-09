@@ -51,22 +51,19 @@ def report_problem(request, *args, **kwargs):
                 userData=dictfetchall(cursor)
             
             #build message
-            message = ""
+            message = ("Dislay Name: " + userData[0]['displayname'] + "\n" +
+                        "username: " + userData[0]['username'] + "\n" +
+                        "Email: " + userData[0]['email'] + "\n" +
+                        "Phone Number: " + userData[0]['phone_number'] + "\n" +
+                        "Concern's Severity: " + severity + "\n\n" + comment)
             
             #send email
             send_mail(
-                "Subject here", #subject
-                "Here is the message.", #message
+                subject, #subject
+                message, #message
                 "from@example.com", #from email
-                ["spacejunkblues@gmail.com"], #to email
+                ["spacejunkblues@gmail.com", "kaitlinmbennett@gmail.com"], #to email
                 fail_silently=False,)
-                
-            print("-----------------")
-            print(userData[0]['displayname'])
-            print(userData[0]['email'])
-            print(userData[0]['phone_number'])
-            print(userData[0]['username'])
-            print("-----------------")
             
             return redirect('/review/thanks')
     else:
