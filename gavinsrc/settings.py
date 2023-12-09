@@ -201,7 +201,8 @@ EMAIL_USE_TLS = True
 #EMAIL_USE_SSL = False
 
 #this will send it to the same console
-#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+if not IS_HEROKU_APP:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 #EMAIL_HOST = 'localhost'
 #EMAIL_PORT = '1025'
