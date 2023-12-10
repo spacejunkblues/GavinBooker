@@ -7,6 +7,12 @@ from django.contrib.auth.models import User, Permission
 from django.db import connection
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.sites.shortcuts import get_current_site
+from .token import account_activation_token
+from django.template.loader import render_to_string
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.core.mail import send_mail
 
 def login_view(request, *args, **kwargs):
     #check to see if the submit button was pressed
@@ -48,6 +54,62 @@ def logout_view(request, *args, **kwargs):
     logout(request)
     return redirect('/users/login_user')
 
+#sends an activate email to the user who just registered
+def sendActivateEmail(request, user, user_email, displayname):
+    subject = "Gavin Booking Account Activation Email"
+    message = render_to_string('activate_email.html',
+                            {'user': displayname,
+                            'domain': get_current_site(request).domain,
+                            'uid':urlsafe_base64_encode(force_bytes(user.pk)),
+                            'token':account_activation_token.make_token(user)})
+    
+    #send the email
+    send_mail(
+        subject, #subject
+        message, #message
+        "gavinbooking@gmail.com", #from email
+        [user_email], #to email
+        fail_silently=False,)
+        
+    messages.success(request, ('An email was sent to your inbox. Please confirm your email by clicking the activation link.'))
+
+#quick helper function
+def get_role(id):
+    #Connect to the database
+    cursor = connection.cursor()
+    
+    #send a query to get all availabilities
+    cursor.execute("SELECT role_ID FROM User_tbl \
+                    WHERE django_ID = %s",[id])
+    
+    return cursor.fetchone()[0]    
+
+def activate_view(request, uidb64, token):
+    #get the user from the uid
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+        
+    #user authiticated via email toke, activate the user
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        login(request, user)
+
+        #get the role
+        role_id = get_role(user.id)
+
+        #Welcome Message
+        if role_id==1:
+            messages.success(request, ('Welcome to Gavin Booking! Click on the "Add" buttons below to start showing bookers when you are available!'))
+        elif role_id==2:
+            messages.success(request, ('Welcome to Gavin Booking! Click on the Scroll button above to start adding performers to your Roster!'))
+    else:
+        messages.error(request,('Activation link invalid.'))
+    return redirect('/')
+
 #helper function that loads data into choice fields
 #helps the register_view function
 def load_reg_form(info_form):
@@ -86,7 +148,9 @@ def register_view(request, *args, **kwargs):
         #Data is valid (data types are correct)
         if cred_form.is_valid() and info_form.is_valid():
             #this will register the user using djangos system
-            cred_form.save()
+            user = cred_form.save(commit=False)
+            user.is_active = False
+            user.save()
             
             #break out user data
             username = cred_form.cleaned_data['username']
@@ -169,9 +233,6 @@ def register_view(request, *args, **kwargs):
                                     [venue_id,
                                     user_id])
             
-            #query django authication system
-            user = authenticate(request, username=username, password=password)
-            
             #set permission based on role
             if role_id==1:
                 permission = Permission.objects.get(name='Can Perform')
@@ -180,16 +241,10 @@ def register_view(request, *args, **kwargs):
                 
             #register the user permission
             user.user_permissions.add(permission)
-        
-            #Valid user, query django login system
-            login(request, user)
             
-            #Give new user a welcome message
-            if role_id==1:
-                messages.success(request, ('Welcome to Gavin Booking! Click on the "Add" buttons below to start showing bookers when you are available!'))
-            elif role_id==2:
-                messages.success(request, ('Welcome to Gavin Booking! Click on the Scroll button above to start adding performers to your Roster!'))
-                
+            #user is now registered but inactive. user needs to verify email to continue
+            sendActivateEmail(request, user, info_form.cleaned_data['email'], info_form.cleaned_data['displayname'])
+            
             #User is logged in
             return redirect('/')
                 

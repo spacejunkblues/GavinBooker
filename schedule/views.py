@@ -351,6 +351,9 @@ def add_availability_view(request, year, month, day, *args, **kwargs):
     #don't let bookers add availabilities
     if get_role(request.user.id) == 2:
         return redirect('/schedule/' + str(year) + '/' + str(month))
+    
+    #log the visit
+    log_visit(request.user.id,"Add", None)
         
     #check to see if the submit button was pressed
     if request.method == "POST":

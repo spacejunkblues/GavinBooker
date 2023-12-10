@@ -30,11 +30,12 @@ class RegForm(forms.Form):
     description = forms.CharField(widget=forms.Textarea, max_length=200, required=False)
     
     #rate(If Performer)
-    rate = forms.DecimalField(max_digits=7, decimal_places=2, label="Hourly Rate")
+    rate = forms.DecimalField(max_digits=7, decimal_places=2, label="Hourly Rate", required=False)
     
     #Average Gigs per month (If Performer)
     averagegigs = forms.IntegerField(label='Average Gigs Per Month',
-                                    help_text="How many performances do you normally conduct each month?")
+                                    help_text="How many performances do you normally conduct each month?",
+                                    required=False)
     
     #Venue (drop down or create new) (If booker)
     venue = forms.ChoiceField(required=False)
@@ -113,4 +114,24 @@ class RegForm(forms.Form):
             if self.data['venue']=='0':
                 if self.data['venuephone']=='':
                     raise forms.ValidationError("Fill in Venue Phone")
+        return data
+        
+    #validation function to make sure field isn't blank
+    def clean_rate(self):
+        data = self.cleaned_data['rate']
+        
+        #check performer validation. Not required for bookers
+        if self.data['role']=='perform':
+            if self.data['rate']=='':
+                raise forms.ValidationError("Fill in your usual hourly rate (this won't lock you into that price)")
+        return data
+    
+    #validation function to make sure field isn't blank
+    def clean_averagegigs(self):
+        data = self.cleaned_data['averagegigs']
+        
+        #check performer validation. Not required for bookers
+        if self.data['role']=='perform':
+            if self.data['averagegigs']=='':
+                raise forms.ValidationError("Fill in Average Gigs Per Month field")
         return data
