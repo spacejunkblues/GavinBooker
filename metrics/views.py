@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from . forms import ProblemForm
 from django.db import connection
 from django.core.mail import send_mail
+from django.template.loader import render_to_string
 
 #fucntion provided by Django documentation
 #https://docs.djangoproject.com/en/4.0/topics/db/sql/
@@ -51,12 +52,14 @@ def report_problem(request, *args, **kwargs):
                 userData=dictfetchall(cursor)
             
             #build message
-            message = ("Dislay Name: " + userData[0]['displayname'] + "\n" +
-                        "username: " + userData[0]['username'] + "\n" +
-                        "Email: " + userData[0]['email'] + "\n" +
-                        "Phone Number: " + userData[0]['phone_number'] + "\n" +
-                        "Concern's Severity: " + severity + "\n\n" + comment)
-            
+            message = render_to_string("problem_email.html",
+                                        {'displayname': userData[0]['displayname'],
+                                        'username': userData[0]['username'],
+                                        'email': userData[0]['email'],
+                                        'phone_number': userData[0]['phone_number'],
+                                        'severity': severity,
+                                        'comment': comment})
+                                        
             #send email
             send_mail(
                 subject, #subject
