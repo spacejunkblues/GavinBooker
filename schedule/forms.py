@@ -86,8 +86,10 @@ class TimePickerWidget(forms.widgets.TimeInput):
         if int(hourValue)>11:
             ampmValue = 'PM'
         if int(hourValue) > 12:
-            hourValue = int(hourValue)-12
-
+            hourValue = f'{int(hourValue)-12}'
+        if int(hourValue) < 10:
+            hourValue = f'0{int(hourValue)}'
+            
         return f'<div class="time-inputbox"> \
                     {super().render(name, value, attrs=None, renderer=None)} \
                 </div> \
