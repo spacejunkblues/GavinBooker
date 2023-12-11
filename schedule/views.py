@@ -313,11 +313,11 @@ def get_booker_details(request, id):
                 
                 #format times into datetimes
                 start = datetime.datetime(year, month, day,
-                                          int(start.strftime('%H')),
-                                          int(start.strftime('%M')))
+                                          int(start[:2]),
+                                          int(start[3:5]))
                 end = datetime.datetime(year, month, day,
-                                          int(end.strftime('%H')),
-                                          int(end.strftime('%M')))
+                                          int(end[:2]),
+                                          int(end[3:5]))
                 
 
                 #Offer the booking to the performer
@@ -328,11 +328,15 @@ def get_booker_details(request, id):
                 return redirect('/schedule/' + str(year) + '/' + str(month))
         
     else:
-            form = BookingForm()
+        #get start and end times that are already in the system
+        start_time = f"{detail_info['start_time'].strftime('%H')}:{detail_info['start_time'].strftime('%M')}:00"
+        end_time = f"{detail_info['end_time'].strftime('%H')}:{detail_info['end_time'].strftime('%M')}:00"
+        
+        form = BookingForm(initial={'start':start_time, 'end':end_time})
         
     #wrap the info in a dict to send out for rendering
     context = {'obj':detail_info, 'form':form}
-    
+
     return render(request, 'bookerdetail.html', context)
 
 @login_required(login_url='/users/login_user')
@@ -366,16 +370,14 @@ def add_availability_view(request, year, month, day, *args, **kwargs):
             start = form.cleaned_data['start']
             end = form.cleaned_data['end']
             location = form.cleaned_data['location']
-            
             #format times into datetimes
             start = datetime.datetime(year, month, day,
-                                      int(start.strftime('%H')),
-                                      int(start.strftime('%M')))
+                                      int(start[:2]),
+                                      int(start[3:5]))
             end = datetime.datetime(year, month, day,
-                                      int(end.strftime('%H')),
-                                      int(end.strftime('%M')))
+                                      int(end[:2]),
+                                      int(end[3:5]))
             
-
             #Connect to the database
             cursor = connection.cursor()
             

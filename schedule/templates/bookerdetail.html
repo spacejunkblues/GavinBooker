@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-
+	{% load static %}
+	
+	<link rel="stylesheet" href="{% static 'css/timeinput.css' %}">
 	<br><br>
 	
 	{% if obj.status_type != None %}
@@ -59,7 +61,6 @@
 			<input type='submit' name='offer' value='Offer' />
 		</form>
 	{% endif %}
-
 
 
 
