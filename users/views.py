@@ -71,7 +71,6 @@ def sendActivateEmail(request, user, user_email, displayname):
         [user_email], #to email
         fail_silently=False,)
         
-    messages.success(request, ('An email was sent to your inbox. Please confirm your email by clicking the activation link.'))
 
 #quick helper function
 def get_role(id):
@@ -245,8 +244,8 @@ def register_view(request, *args, **kwargs):
             #user is now registered but inactive. user needs to verify email to continue
             sendActivateEmail(request, user, info_form.cleaned_data['email'], info_form.cleaned_data['displayname'])
             
-            #User is logged in
-            return redirect('/')
+            #Send user to a holding page until their email has been confirmed.
+            return render(request, 'registered.html',{'email':info_form.cleaned_data['email']})
                 
     else:
         #This else handles initail vist to page (ie, Get request)
