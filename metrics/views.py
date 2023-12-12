@@ -64,8 +64,8 @@ def report_problem(request, *args, **kwargs):
             send_mail(
                 subject, #subject
                 message, #message
-                "from@example.com", #from email
-                ["spacejunkblues@gmail.com", "kaitlinmbennett@gmail.com"], #to email
+                "gavinbooking@gmail.com", #from email
+                ["gavinbooking@gmail.com", "kaitlinmbennett@gmail.com"], #to email
                 fail_silently=False,)
             
             return redirect('/review/thanks')
