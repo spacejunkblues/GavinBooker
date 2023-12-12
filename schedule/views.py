@@ -6,6 +6,9 @@ from . forms import AddAvailabilityForm, BookingForm
 import datetime
 from django.contrib import messages
 from metrics.loghelper import log_visit
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.contrib.sites.shortcuts import get_current_site
 
 #fucntion provided by Django documentation
 #https://docs.djangoproject.com/en/4.0/topics/db/sql/
@@ -233,15 +236,20 @@ def get_booker_details(request, id):
     #Connect to the database
     cursor = connection.cursor()
     
-    #get performer id from the django ID
-    cursor.execute("SELECT booker_ID \
-                    FROM Booker NATURAL JOIN User_tbl \
+    #get booker id from the django ID
+    cursor.execute("SELECT booker_ID, name \
+                    FROM Booker NATURAL JOIN User_tbl JOIN Venue \
+                    ON Venue.venue_ID = Booker.venue_ID \
                     WHERE django_ID = %s;",[request.user.id])
-    booker_id = cursor.fetchone()
+    row = cursor.fetchone()
+    
+    #break out data collected from query
+    booker_id = row[0]
+    venue = row[1]
     
     #send a query to get all availabilities
-    cursor.execute("SELECT rate, start_time, end_time, location, displayname \
-                    FROM bookers_options \
+    cursor.execute("SELECT rate, start_time, end_time, location, displayname, email \
+                    FROM bookers_options NATURAL JOIN Performer NATURAL JOIN User_tbl\
                     WHERE availability_ID = %s AND \
                         booker_ID = %s",[id, booker_id])
 
@@ -295,7 +303,7 @@ def get_booker_details(request, id):
             return redirect('/schedule/detail/' + str(id))
         
         elif 'offer' in request.POST.keys():
-            #Looking at an option
+            #Looking at an availability
             form = BookingForm(request.POST)
             
             #Data is valid (data types are correct)
@@ -323,6 +331,23 @@ def get_booker_details(request, id):
                 #Offer the booking to the performer
                 cursor.execute("CALL bookPerformer(%s,%s,%s,%s,%s,%s)",
                                 [booker_id, id, payment, condition, start, end])
+                                
+                #prep the email
+                subject = f"You have an offer from{venue}"
+                message = render_to_string('offer_email.html',
+                                        {'performer': detail_info['displayname'],
+                                        'venue': venue,
+                                        'date': f'{day}/{month}/{year}',
+                                        'domain': get_current_site(request).domain,
+                                        'id':id})
+                            
+                #send email to performer informing him of the offer
+                send_mail(
+                    subject, #subject
+                    message, #message
+                    "gavinbooking@gmail.com", #from email
+                    [detail_info['email']], #to email
+                    fail_silently=False,)
                 
                 #redirect to calendar view
                 return redirect('/schedule/' + str(year) + '/' + str(month))

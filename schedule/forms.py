@@ -119,7 +119,7 @@ class BookingForm(forms.Form):
     start = forms.TimeField(widget=TimePickerWidget, label='') #label is handled by the widget
     end = forms.TimeField(widget=TimePickerWidget, label='')
     payment = forms.DecimalField(max_digits=7, decimal_places=2)
-    condition = forms.CharField(widget=forms.Textarea,max_length=200)
+    condition = forms.CharField(widget=forms.Textarea,max_length=200, required=False)
      
     #This is required to make the timepicker widget to work. Each field needs to be overwritten
     def clean_start(self):

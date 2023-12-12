@@ -1,0 +1,7 @@
+{% autoescape off %}
+Hi {{ performer }},
+
+{{ venue }} has just offered you a gig on {{ date }}! To review the offer click the following link:
+
+http://{{ domain }}{% url 'Detail' id=id %}
+{% endautoescape %}
