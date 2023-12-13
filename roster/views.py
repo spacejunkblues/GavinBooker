@@ -1,9 +1,12 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.db import connection
-from . forms import AddPerformerForm
+from . forms import AddPerformerForm, InvitePerformerForm
 from django.contrib import messages
 from metrics.loghelper import log_visit
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.contrib.sites.shortcuts import get_current_site
 
 #fucntion provided by Django documentation
 #https://docs.djangoproject.com/en/4.0/topics/db/sql/
@@ -50,6 +53,63 @@ def load_performer_form(info_form):
     #store in the Genre choice field
     info_form.fields['performers'].choices=performer_list
     return
+    
+@login_required(login_url='/users/login_user')
+def invite_view(request, *args, **kwargs):
+    if request.method == "POST":
+        form = InvitePerformerForm(request.POST)
+        
+        if form.is_valid():
+            #get performer email
+            email = form.cleaned_data['email']
+            
+            #get database connection
+            cursor = connection.cursor()
+            
+            #get Venue's name
+            cursor.execute("WITH bookerinfo AS \
+                                (SELECT id, user_id, django_id, booker_id, venue_id \
+                                FROM auth_user JOIN User_tbl NATURAL JOIN Booker \
+                                ON User_tbl.django_ID = auth_user.ID \
+                                WHERE auth_user.id = %s) \
+                            SELECT name \
+                            FROM bookerinfo NATURAL JOIN Venue", 
+                            [request.user.id])
+            venue=cursor.fetchone()[0]
+            
+            #check to make sure the email isn't already on the list
+            cursor.execute("SELECT COUNT(*) \
+                            FROM User_tbl \
+                            WHERE email = %s", 
+                            [email])
+                 
+            #let book know to check the drop down menu
+            if cursor.fetchone()[0] > 0:
+                messages.success(request, ("Performer already has an account. Check the drop down menu."))
+            else:
+                #email is not in the system, send the invite
+                #setup email  
+                subject = "Gavin Booking Invitation"
+                message = render_to_string('invite_email.html',
+                                {'venue': venue,
+                                'domain': get_current_site(request).domain})
+        
+                #email the performer an invintation
+                send_mail(
+                    subject, #subject
+                    message, #message
+                    "gavinbooking@gmail.com", #from email
+                    [email], #to email
+                    fail_silently=False,)
+                
+                #tell booker that email was sent
+                messages.success(request, ("Invitation successfully sent to the performer!"))
+            
+            #send booker back to the roster
+            return redirect('/roster')
+    else:
+        form = InvitePerformerForm()
+    return render(request, 'invite.html', {'form':form})
     
 @login_required(login_url='/users/login_user')
 def roster_view(request, *args, **kwargs):
