@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from . forms import LoginForm, RegForm
-from django.contrib.auth.forms import UserCreationForm
+from . forms import LoginForm, RegForm, PasswordResetForm
+from django.contrib.auth.forms import UserCreationForm, SetPasswordForm
 from django.contrib.auth.models import User, Permission
 from django.db import connection
 from django.contrib.auth.decorators import login_required
@@ -53,6 +53,96 @@ def login_view(request, *args, **kwargs):
 def logout_view(request, *args, **kwargs):
     logout(request)
     return redirect('/users/login_user')
+
+def reset_view(request, uidb64, token):
+    #get the user from the uid
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+        
+    #user authiticated via email toke, reset the password the user
+    if user is not None and account_activation_token.check_token(user, token):
+        if request.method == "POST":
+            form = SetPasswordForm(user, request.POST)
+            
+            if form.is_valid():
+                #update the new password
+                form.save()
+                
+                #change the user back to active so he can log in
+                user.is_active = True
+                user.save()
+                
+                #log in user
+                login(request, user)
+                messages.success(request, ('Password successfully changed!'))
+                return redirect('/')
+        else:
+            form = SetPasswordForm(user)
+        
+        return render(request, 'passwordreset_newpassword.html', {'form':form})
+    else:
+        messages.error(request,('link invalid.'))
+    return redirect('/')
+
+def passwordreset_view(request, *args, **kwargs):
+    #handle post of the form
+    if request.method == "POST":
+        #initialize the form object
+        form = PasswordResetForm(request.POST)
+        
+        
+        #Data is valid (data types are correct)
+        if form.is_valid():
+            #break out data
+            username = form.cleaned_data['userName']
+            
+            #Connect to the database
+            cursor = connection.cursor()
+    
+            #send a query to get the user's email
+            cursor.execute("SELECT User_tbl.email, User_tbl.displayname, auth_user.id \
+                            FROM auth_user JOIN User_tbl \
+                            ON User_tbl.django_ID = auth_user.ID \
+                            WHERE username = %s",[username])
+            (email, displayname, id) = cursor.fetchone()
+            
+            #get user object
+            user = User.objects.get(pk=id)
+            user.is_active = False
+            user.save()
+            
+            #send email    
+            subject = "Gavin Booking Password Reset"
+            message = render_to_string('passwordreset_email.html',
+                            {'user': displayname,
+                            'domain': get_current_site(request).domain,
+                            'uid':urlsafe_base64_encode(force_bytes(id)),
+                            'token':account_activation_token.make_token(user)})
+    
+            #send the email
+            send_mail(
+                subject, #subject
+                message, #message
+                "gavinbooking@gmail.com", #from email
+                [email], #to email
+                fail_silently=False,)
+            
+            #render to a holding page
+            return render(request, 'passwordreset_holding.html',{'email':email})
+    else:
+        #init form
+        form = PasswordResetForm()
+        
+    #wrap the form in a dict to send out for rendering
+    context = {'form':form}
+    
+    #render password rest form
+    return render(request, 'passwordreset.html',context)
+
+
 
 #sends an activate email to the user who just registered
 def sendActivateEmail(request, user, user_email, displayname):

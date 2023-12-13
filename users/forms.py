@@ -5,6 +5,9 @@ class LoginForm(forms.Form):
     userName = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput())
     
+class PasswordResetForm(forms.Form):
+    userName = forms.CharField(label = "User Name")
+    
 class RegForm(forms.Form):
     #performer or booker
     rolechoice = [("perform", "Performer"),("book","Booker")]
