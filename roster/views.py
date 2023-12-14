@@ -56,6 +56,10 @@ def load_performer_form(info_form):
     
 @login_required(login_url='/users/login_user')
 def invite_view(request, *args, **kwargs):
+    #don't let performers view the roster
+    if get_role(request.user.id) == 1:
+        return redirect('/schedule')
+        
     if request.method == "POST":
         form = InvitePerformerForm(request.POST)
         
@@ -110,7 +114,40 @@ def invite_view(request, *args, **kwargs):
     else:
         form = InvitePerformerForm()
     return render(request, 'invite.html', {'form':form})
+
+@login_required(login_url='/users/login_user')
+def delete_view(request, id, *args, **kwargs):
+    #don't let performers view the roster
+    if get_role(request.user.id) == 1:
+        return redirect('/schedule')
+        
+    #get the ids
+    performer_id = id
+    django_id = request.user.id
     
+    #Connect to the database
+    cursor = connection.cursor()   
+    
+    #check that the performer is on the roster
+    cursor.execute("SELECT booker_id \
+                    FROM Booker NATURAL JOIN User_tbl NATURAL JOIN Roster \
+                    WHERE django_id = %s AND performer_id = %s", 
+                [django_id, performer_id])                 
+    #get query result
+    result = cursor.fetchone()
+    
+    #delete performer from booker's roster
+    if result != None:
+        #get booker_id
+        booker_id=result[0]
+        
+        #delete performer
+        cursor.execute("DELETE FROM Roster \
+                        WHERE booker_id = %s AND performer_id = %s", 
+                        [booker_id, performer_id])   
+
+    return redirect('/roster')
+
 @login_required(login_url='/users/login_user')
 def roster_view(request, *args, **kwargs):
     #don't let performers view the roster
@@ -126,7 +163,7 @@ def roster_view(request, *args, **kwargs):
     #Connect to the database
     cursor = connection.cursor()
     
-    #check to see if the add button was pressed
+    #check to see if the add button was pressed and it wasn't one of the 'Del' buttons
     if request.method == "POST":
         info_form = AddPerformerForm(request.POST)
         
@@ -156,7 +193,7 @@ def roster_view(request, *args, **kwargs):
     else:
         #This else handles initail vist to page (ie, Get request)
         info_form = AddPerformerForm() 
-        
+
         #format performer form
         load_performer_form(info_form)
     

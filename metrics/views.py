@@ -78,5 +78,6 @@ def report_problem(request, *args, **kwargs):
     return render(request, 'report_problem.html',context)
 
 #this will be the main data dump page for admins
+#RESTRICT ACESS
 def metric_view(request, *args, **kwargs):
     return render(request, 'review.html', context)
