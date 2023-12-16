@@ -56,8 +56,8 @@ def load_performer_form(info_form):
     
 @login_required(login_url='/users/login_user')
 def invite_view(request, *args, **kwargs):
-    #don't let performers view the roster
-    if get_role(request.user.id) == 1:
+    #only let bookers view the roster
+    if get_role(request.user.id) != 2:
         return redirect('/schedule')
         
     if request.method == "POST":
@@ -89,7 +89,7 @@ def invite_view(request, *args, **kwargs):
                  
             #let book know to check the drop down menu
             if cursor.fetchone()[0] > 0:
-                messages.success(request, ("Performer already has an account. Check the drop down menu."))
+                messages.error(request, ("Performer already has an account. Check the drop down menu."))
             else:
                 #email is not in the system, send the invite
                 #setup email  
@@ -117,8 +117,8 @@ def invite_view(request, *args, **kwargs):
 
 @login_required(login_url='/users/login_user')
 def delete_view(request, id, *args, **kwargs):
-    #don't let performers view the roster
-    if get_role(request.user.id) == 1:
+    #only let bookers view the roster
+    if get_role(request.user.id) != 2:
         return redirect('/schedule')
         
     #get the ids
@@ -150,8 +150,8 @@ def delete_view(request, id, *args, **kwargs):
 
 @login_required(login_url='/users/login_user')
 def roster_view(request, *args, **kwargs):
-    #don't let performers view the roster
-    if get_role(request.user.id) == 1:
+    #only bookers can view the roster
+    if get_role(request.user.id) != 2:
         return redirect('/schedule')
         
     #log the visit
@@ -184,7 +184,7 @@ def roster_view(request, *args, **kwargs):
                             
             #check to see if name taken
             if cursor.fetchone()[0] > 0:
-                messages.success(request, ("Performer already added to the roster."))
+                messages.error(request, ("Performer already added to the roster."))
             else:
                 #add performer to the roster
                 cursor.execute("INSERT INTO Roster  \
@@ -211,8 +211,8 @@ def roster_view(request, *args, **kwargs):
 
 @login_required(login_url='/users/login_user')
 def performer_availability_view(request, id, *args, **kwargs):
-    #don't let performers view the roster
-    if get_role(request.user.id) == 1:
+    #only let bookers view the roster
+    if get_role(request.user.id) != 2:
         return redirect('/schedule')
     
     #log the visit
@@ -232,6 +232,10 @@ def performer_availability_view(request, id, *args, **kwargs):
                             booker_ID = %s",[id, booker_id])
     
     performer_avail = dictfetchall(cursor)
+    
+    #performer is not on the bookers roster
+    if performer_avail==[]:
+        return redirect('/schedule')
     
     #wrap the info in a dict to send out for rendering
     context = {'obj':performer_avail, 
