@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'schedule',
     'roster',
     'metrics',
+    'admindash',
 ]
 
 MIDDLEWARE = [

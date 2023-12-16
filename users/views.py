@@ -37,7 +37,7 @@ def login_view(request, *args, **kwargs):
                 return redirect('/')
             else:
                 #Invalid log in
-                messages.success(request, ('There was an error with loging in'))
+                messages.error(request, ('There was an error with loging in'))
                 
     else:
         #This else handles initail vist to page (ei, Get request)
@@ -496,7 +496,7 @@ def register_dummy(request, *args, **kwargs):
 
     else:
         #Invalid log in
-        messages.success(request, ('Dummies already loaded'))
+        messages.error(request, ('Dummies already loaded'))
     
         
     return redirect('/users')
@@ -589,6 +589,6 @@ def delete_dummy(request, *args, **kwargs):
 
     else:
         #Invalid log in
-        messages.success(request, ('No Dummies loaded'))
+        messages.error(request, ('No Dummies loaded'))
     
     return redirect('/users')

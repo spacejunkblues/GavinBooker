@@ -123,6 +123,10 @@ def get_role(id):
 
 @login_required(login_url='/users/login_user')
 def calendar_view(request, year ='', month='', *args, **kwargs):
+    #send admins to the dasboard instead
+    if get_role(request.user.id) == 3:
+        return redirect('/admindash')
+        
     #log the visit
     log_visit(request.user.id,"Calendar", None)
 
@@ -371,14 +375,16 @@ def detail_view(request, id, *args, **kwargs):
     
     if get_role(request.user.id) == 1:#Performers
         return get_performer_details(request,id)
-    else: #Bookers
+    elif get_role(request.user.id) == 2: #Bookers
         return get_booker_details(request,id)
+    else:
+        return redirect('/')
     
 
 @login_required(login_url='/users/login_user')
 def add_availability_view(request, year, month, day, *args, **kwargs):
-    #don't let bookers add availabilities
-    if get_role(request.user.id) == 2:
+    #only let performers add availabilities
+    if get_role(request.user.id) != 1:
         return redirect('/schedule/' + str(year) + '/' + str(month))
     
     #log the visit

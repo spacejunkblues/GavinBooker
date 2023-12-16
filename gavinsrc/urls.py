@@ -25,4 +25,5 @@ urlpatterns = [
     path('schedule/', include('schedule.urls')),
     path('roster/', include('roster.urls')),
     path('metrics/', include('metrics.urls')),
+    path('admindash/', include('admindash.urls')),
 ]

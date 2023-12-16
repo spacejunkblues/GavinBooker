@@ -70,7 +70,7 @@ a:active {
 		<a href="/" class="nav-items"><img class='icon' src="{% static 'images/calendar_icon.PNG' %}"></a>
 		
 		<!--This is the Roster Icon-->
-		{% if perms.auth.can_book %}
+		{% if perms.auth.can_book and not perms.auth.can_admin %}
 			<a href="/roster" class="nav-items"><img class='icon' src="{% static 'images/roster_icon.PNG' %}"></a>
 		{% endif %}
 		
