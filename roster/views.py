@@ -40,12 +40,18 @@ def get_role(id):
     
 #helper function that loads data into choice fields and formats labels
 #helps the roster_view function
-def load_performer_form(info_form):
+def load_performer_form(info_form, booker_id):
     #get list from database
     cursor = connection.cursor()
+    
+    #gets all peformers that have an active account
     cursor.execute("SELECT performer_id, displayname \
-                    FROM Performer INNER JOIN User_tbl \
-                    ON Performer.user_id = User_tbl.user_id")
+                    FROM (Performer INNER JOIN User_tbl ON Performer.user_id = User_tbl.user_id \
+                    JOIN auth_user ON User_tbl.django_id = auth_user.id) as T \
+                    WHERE T.is_active= True AND 0 = (SELECT COUNT(*) \
+                                                    FROM Roster \
+                                                    WHERE Roster.performer_id = T.performer_id AND booker_id = %s)",
+                                                    [booker_id])
 
     #reformat result to work in choicefield
     performer_list=[x for x in cursor.fetchall()]
@@ -168,7 +174,7 @@ def roster_view(request, *args, **kwargs):
         info_form = AddPerformerForm(request.POST)
         
         #format performer form
-        load_performer_form(info_form)
+        load_performer_form(info_form, booker_id)
         
         #Data is valid (data types are correct)
         if info_form.is_valid():
@@ -190,12 +196,15 @@ def roster_view(request, *args, **kwargs):
                 cursor.execute("INSERT INTO Roster  \
                                 VALUES (%s, %s);",
                                 [booker_id, performer_id])
+                                
+                #reload the form so that the newly added performer doesn't appear in the drop down
+                load_performer_form(info_form, booker_id)
     else:
         #This else handles initail vist to page (ie, Get request)
         info_form = AddPerformerForm() 
 
         #format performer form
-        load_performer_form(info_form)
+        load_performer_form(info_form, booker_id)
     
     #get the bookers roster from the database
     cursor.execute("SELECT performer_ID, description, rate, displayname, \
