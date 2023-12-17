@@ -107,31 +107,35 @@ def passwordreset_view(request, *args, **kwargs):
                             FROM auth_user JOIN User_tbl \
                             ON User_tbl.django_ID = auth_user.ID \
                             WHERE username = %s",[username])
-            (email, displayname, id) = cursor.fetchone()
+            result = cursor.fetchone()
             
-            #get user object
-            user = User.objects.get(pk=id)
-            user.is_active = False
-            user.save()
+            #username exists
+            if result != None:
+                (email, displayname, id) = result
             
-            #send email    
-            subject = "Gavin Booking Password Reset"
-            message = render_to_string('passwordreset_email.html',
-                            {'user': displayname,
-                            'domain': get_current_site(request).domain,
-                            'uid':urlsafe_base64_encode(force_bytes(id)),
-                            'token':account_activation_token.make_token(user)})
-    
-            #send the email
-            send_mail(
-                subject, #subject
-                message, #message
-                "gavinbooking@gmail.com", #from email
-                [email], #to email
-                fail_silently=False,)
+                #get user object
+                user = User.objects.get(pk=id)
+                user.is_active = False
+                user.save()
+                
+                #send email    
+                subject = "Gavin Booking Password Reset"
+                message = render_to_string('passwordreset_email.html',
+                                {'user': displayname,
+                                'domain': get_current_site(request).domain,
+                                'uid':urlsafe_base64_encode(force_bytes(id)),
+                                'token':account_activation_token.make_token(user)})
+        
+                #send the email
+                send_mail(
+                    subject, #subject
+                    message, #message
+                    "gavinbooking@gmail.com", #from email
+                    [email], #to email
+                    fail_silently=False,)
             
             #render to a holding page
-            return render(request, 'passwordreset_holding.html',{'email':email})
+            return render(request, 'passwordreset_holding.html')
     else:
         #init form
         form = PasswordResetForm()

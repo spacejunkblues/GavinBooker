@@ -121,7 +121,8 @@ def get_role(id):
     
     return cursor.fetchone()[0]    
 
-@login_required(login_url='/users/login_user')
+#redirects to the review page without login follow on
+@login_required(login_url='/review', redirect_field_name=None)
 def calendar_view(request, year ='', month='', *args, **kwargs):
     #send admins to the dasboard instead
     if get_role(request.user.id) == 3:
