@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+	
+	{{ info.displayname }}<br>
+	{{ info.email }}<br>
+	<!--Role-->
+	<div style="text-align: right; float:right; padding-right:20px; font-size:24px;">
+		{{ info.user_type }}
+	</div>
+	{{ info.phone_number }}	
+	<!--Send email button-->
+	<div style="text-align: center;">
+		<form method='POST'> {% csrf_token %}
+				<input name="sendemail" type='submit' value='Send Activation Email' />
+		</form>
+	</div><br>	
+	<br>
+	<br>
+		
+		
+	<!--Performers Details-->
+	{% if role_id == 1 %}
+		<div style="font-size:12px">
+			${{ info.rate }} Hourly Rate<br>
+			{{ info.genre_type }}<br>
+			{{ info.description }}<br>
+		</div>
+		<br>
+		
+		<table class="tablelist">
+		<tr>
+			<th>Availabilities/Bookings</th>
+			<th>Location</th>
+			<th>Status</th>
+			<th>Venue</th>
+			<th>Payment</th>
+			<th class='condition'>Condition</th>
+		</tr>
+		{% for row in obj %}
+			<tr>	
+				<td>{{ row.start_time }} - {{ row.end_time }}</td>
+				<td>{{ row.location }}</td>
+				<td>{% if row.status_type != None %}
+						{{ row.status_type }}
+					{% else %}
+							Avail
+					{% endif %}
+				</td>
+				<td>{% if row.name != None %}{{ row.name }}{% endif %}</td>
+				<td>{% if row.payment != None %}{{ row.payment }}{% endif %}</td>
+				<td class='condition'>{% if row.condition != None %}{{ row.condition }}{% endif %}</td>
+			</tr>
+		{% endfor %}
+		</table>
+	
+	<!-- display Booker info -->
+	{% elif role_id == 2 %}		
+		<div style="font-size:12px">
+			{{ info.name }}<br>
+			{{ info.vphone_number }}<br>
+			{{ info.vemail }}<br>
+			{{ info.address }}<br>
+		</div>
+		<h3>Roster</h3>
+		<table class="tablelist">
+			<tr>
+				<th>Name</th>
+				<th>Hr Rate</th>
+				<th>Email</th>
+				<th>Phone Number</th>
+				<th>Genre</th>
+				<th>Description</th>
+			</tr>
+			{% for performer in obj%}
+				<tr>
+					<td>{{ performer.displayname }}</td>
+					<td>{{ performer.rate }}</td>
+					<td>{{ performer.email }}</td>
+					<td>{{ performer.phone_number }}</td>
+					<td>{{ performer.genre_type }}</td>
+					<td>{{ performer.description }}</td>
+				</tr>
+			{% endfor %}
+		</table>
+	{% endif %}
+{% endblock %}

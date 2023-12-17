@@ -4,9 +4,41 @@
 	<h1>Admin Dashboard</h1>
 	<br><br>
 
-	<form method='POST'> {% csrf_token %}
-	{{ form.as_p }}
-	<input type='submit' value='Submit' />
-	</form>
+	<table class="tablelist">
+	<tr>
+		<th>Display Name</th>
+		<th>Email</th>
+		<th>Phone Number</th>
+		<th>is_active</th>
+		<th>Last Login</th>
+		<th>Date Joined</th>
+		<th>Role</th>
+		<th>Venue</th>
+		<th>Rate</th>
+		<th>Genre</th>
+	</tr>
+	{% for row in obj %}
+		<tr>	
+			<td>
+				{% if row.role_id == 1 %}
+					<a href="userdetail/1/{{ row.performer_id }}">{{ row.displayname }}</a>
+				{% elif row.role_id == 2 %}
+					<a href="userdetail/2/{{ row.booker_id }}">{{ row.displayname }}</a>
+				{% else %}
+					{{ row.displayname }}
+				{% endif %}
+			</td>
+			<td>{{ row.email }}</td>
+			<td>{{ row.phone_number }}</td>
+			<td>{{ row.is_active }}</td>
+			<td>{{ row.last_login }}</td>
+			<td>{{ row.date_joined }}</td>
+			<td>{{ row.user_type }}</td>
+			<td>{% if row.name != None %}{{ row.name }}{% endif %}</td>
+			<td>{% if row.rate != None %}{{ row.rate }}{% endif %}</td>
+			<td>{% if row.genre_type != None %}{{ row.genre_type }}{% endif %}</td>
+		</tr>
+	{% endfor %}
+	</table>
 
 {% endblock %}
