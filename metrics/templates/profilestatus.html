@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% include 'metricbar.html' %}
+	<style>
+	table td, table td * {
+		padding-right: 25px;
+	}
+	table th, table th * {
+		padding-right: 25px;
+	}
+	</style>
+	<br>
+
+	<h3>Total users : {{ users_num.total }}</h3>
+	<br>
+	<p>Monthly numbers</p>
+	<table style='text-align: left; padding-right: 20px;'>
+		<tr>
+			<th> Role </th>
+			<th> Joined </th>
+			<th> Logged in </th>
+			<th> Not on Roster* </th>
+		</tr>
+		{% for row in info %}
+		<tr>
+			<td>{{ row.role }}</td>
+			<td>{{ row.joined }}</td>
+			<td>{{ row.logged }}</td>
+			<td>{{ row.notroster }}</td>
+		</tr>
+		{% endfor %}
+	</table>
+	<p>*Roster status is not tracked monthly. This shows current state of performers on rosters.
+	
+{% endblock %}

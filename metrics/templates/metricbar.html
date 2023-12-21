@@ -1,0 +1,16 @@
+
+<style>
+.metricnav{
+	padding-right:20px;
+}
+</style>
+<br>
+	<div style="text-align: center;">
+		<a href="/metrics/profile/{{ bar.year }}/{{ bar.month }}" class='metricnav'>Profile Status</a>
+		<a href="/metrics/{{ bar.year }}/{{ bar.month }}" class='metricnav'>Site Visited</a>
+		<a href="/metrics/gigs/{{ bar.year }}/{{ bar.month }}" class='metricnav'>Gigs Booked</a>
+		{{ bar.monthName }} {{ bar.year }}
+		<a href="/{{ bar.page }}/{{ bar.previous_year }}/{{ bar.previous_month }}">previous</a>
+		<a href="/{{ bar.page }}/{{ bar.next_year }}/{{ bar.next_month }}">next</a>
+	</div>
+

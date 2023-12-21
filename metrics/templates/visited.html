@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% include 'metricbar.html' %}
+	<br>
+
+	<h3>Total Visits this month : {{ total_visits }}</h3>
+	<img src="data:image/png;base64,{{ visits_per_page_graph }}" alt="" , width="500">
+	<img src="data:image/png;base64,{{ top_user_visits_graph }}" alt="" , width="500">
+	<img src="data:image/png;base64,{{ visits_per_role_graph }}" alt="" , width="500">
+	
+{% endblock %}

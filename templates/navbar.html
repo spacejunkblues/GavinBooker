@@ -66,12 +66,20 @@ a:active {
 			</div>
 		</div>
 		
+		{% if not perms.auth.can_admin %}
 		<!--This is the Calendar Icon-->
-		<a href="/" class="nav-items"><img class='icon' src="{% static 'images/calendar_icon.PNG' %}"></a>
+			<a href="/" class="nav-items"><img class='icon' src="{% static 'images/calendar_icon.PNG' %}"></a>
+		{% endif %}
 		
-		<!--This is the Roster Icon-->
 		{% if perms.auth.can_book and not perms.auth.can_admin %}
+		<!--This is the Roster Icon-->
 			<a href="/roster" class="nav-items"><img class='icon' src="{% static 'images/roster_icon.PNG' %}"></a>
+		{% endif %}
+		
+		{% if perms.auth.can_admin %}
+		<!--This is the Admindash Icon-->
+			<a href="/" class="nav-items"><img class='icon' src="{% static 'images/admindash_icon.PNG' %}"></a>
+			<a href="/metrics" class="nav-items"><img class='icon' src="{% static 'images/metric_icon.PNG' %}"></a>
 		{% endif %}
 		
 	{% else %}
