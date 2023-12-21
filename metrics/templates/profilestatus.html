@@ -15,7 +15,7 @@
 
 	<h3>Total users : {{ users_num.total }}</h3>
 
-	<p>Monthly numbers</p>
+
 	<table style='text-align: left; padding-right: 20px;'>
 		<tr>
 			<th> Role </th>
@@ -32,6 +32,19 @@
 		</tr>
 		{% endfor %}
 	</table>
-	<p>*Roster status is not tracked monthly. This shows current state of performers on rosters.
+	<p>*Roster status is not tracked monthly.
 	
+	<!--list of performers not on a roster-->
+	<br><br><br>
+	<table style='text-align: left; padding-right: 20px;'>
+		<tr>
+			<th>List of Performers Not on a Roster</th>
+		</tr>
+		{% for performer in sad_names_list %}
+		<tr>
+			<td>{{ performer }}</td>
+		</tr>
+		{% endfor %}
+	</table>
+	<br><br><br><br>
 {% endblock %}
