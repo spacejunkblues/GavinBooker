@@ -262,7 +262,8 @@ def gigs_view(request, year = '', month = '', *args, **kwargs):
         
     #get total gigs
     try:
-        total_gigs=gigs_df['booking'].sum()
+        df=gigs_df.groupby('name').agg(aggdict)[['booking','payment']]
+        total_gigs=df['booking'].sum()
     except:
         total_gigs = ''
         messages.error(request,"no data for Total Gigs")
