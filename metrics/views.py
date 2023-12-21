@@ -287,14 +287,14 @@ def gigs_view(request, year = '', month = '', *args, **kwargs):
 #this will be the main data dump page for admins
 #----Site Visited
 @login_required(login_url='/users/login_user')
-def metric_view(request, year = '', month = '', *args, **kwargs):
+def visits_view(request, year = '', month = '', *args, **kwargs):
     #only let admin view the dasboard
     if get_role(request.user.id) != 3:
         return redirect('/schedule')
     
     #get info from the metric bar, such as current and next month
     #pass current page to enable next and previous
-    bar = GetBarData('metrics', year, month)
+    bar = GetBarData('metrics/visits', year, month)
 
     #get connection from database
     cursor = connection.cursor()
