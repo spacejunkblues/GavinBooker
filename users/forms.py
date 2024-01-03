@@ -41,9 +41,10 @@ class RegForm(forms.Form):
                                     required=False)
     
     #Venue (drop down or create new) (If booker)
-    venue = forms.ChoiceField(required=False)
-    
-    #Name (If booker and creating new venue)
+    venue = forms.ChoiceField(widget=forms.RadioSelect,
+	                          choices=[(0,'Create New Venue Now'),(1,'Create or Join a Venue Later')],required=False,
+	                          label="")
+        #Name (If booker and creating new venue)
     venuename = forms.CharField(max_length=70, strip=True, required=False, label='Venue Name')
     
     #email (If booker and creating new venue)
@@ -118,7 +119,7 @@ class RegForm(forms.Form):
                 if self.data['venuephone']=='':
                     raise forms.ValidationError("Fill in Venue Phone")
         return data
-        
+		
     #validation function to make sure field isn't blank
     def clean_rate(self):
         data = self.cleaned_data['rate']
@@ -138,3 +139,6 @@ class RegForm(forms.Form):
             if self.data['averagegigs']=='':
                 raise forms.ValidationError("Fill in Average Gigs Per Month field")
         return data
+		
+		
+

@@ -127,7 +127,7 @@ def calendar_view(request, year ='', month='', *args, **kwargs):
     #send admins to the dasboard instead
     if get_role(request.user.id) == 3:
         return redirect('/admindash')
-        
+    
     #log the visit
     log_visit(request.user.id,"Calendar", None)
 
@@ -149,9 +149,23 @@ def calendar_view(request, year ='', month='', *args, **kwargs):
     
     #preps the calendar for html parsing
     cal.buildCalendar()
-        
+    
+    #get the active venue
+    cursor = connection.cursor()
+    cursor.execute("SELECT name \
+                    FROM User_tbl NATURAL JOIN Booker NATURAL JOIN ActiveVenue \
+                                INNER JOIN Venue ON Venue.venue_ID = ActiveVenue.venue_ID \
+                    WHERE django_ID = %s",[request.user.id])
+    active_venue = dictfetchall(cursor)
+    
+    #format active venue
+    if active_venue == []:
+        active_venue={'name':'No Active Venue'}
+    else:
+        active_venue=active_venue[0]
+
     #wrap the calendar in a dict to send out for rendering
-    context = {'month':cal, 'role':role_id}
+    context = {'month':cal, 'role':role_id, 'active_venue':active_venue}
     
     return render(request, 'calendar.html', context)
 
@@ -180,14 +194,14 @@ def get_performer_details(request, id):
     if row == None:
         #send query to get all booked gigs.
         cursor.execute("SELECT status_id, status_type, payment, condition, start_time, end_time, \
-                            name, address, displayname, email \
+                            name, address, displayname, email, phone_number \
                         FROM performers_booked NATURAL JOIN Status \
                         WHERE availability_ID = %s AND \
                             performer_ID = %s",[id, performer_id])
         #store query result
         cols = [col[0] for col in cursor.description]
         row = cursor.fetchone()
-        
+
         #No result
         if row == None:
             return redirect('/')
@@ -242,15 +256,21 @@ def get_booker_details(request, id):
     cursor = connection.cursor()
     
     #get booker id from the django ID
-    cursor.execute("SELECT booker_ID, name \
-                    FROM Booker NATURAL JOIN User_tbl JOIN Venue \
-                    ON Venue.venue_ID = Booker.venue_ID \
-                    WHERE django_ID = %s;",[request.user.id])
+    cursor.execute("SELECT Booker.booker_id, name, Venue.venue_id \
+					FROM User_tbl NATURAL JOIN Booker NATURAL JOIN ActiveVenue \
+								INNER JOIN Venue ON Venue.venue_id = ActiveVenue.venue_id \
+					WHERE django_id = %s",[request.user.id])
     row = cursor.fetchone()
     
+    #check to make sure Booker has an active venue
+    if row==None:
+        messages.error(request, ('Need an active Venue to make offers. Select the Venue symbol above'))
+        return redirect('/')
+        
     #break out data collected from query
     booker_id = row[0]
     venue = row[1]
+    venue_id = row[2]
     
     #send a query to get all availabilities
     cursor.execute("SELECT rate, start_time, end_time, location, displayname, email \
@@ -265,10 +285,10 @@ def get_booker_details(request, id):
     #if row is empty, check to see if it's a booked gig instead
     if row == None:
         #send query to get all booked gigs.
-        cursor.execute("SELECT status_id, status_type, payment, condition, start_time, end_time, displayname \
-                        FROM bookers_booked NATURAL JOIN Status \
-                        WHERE availability_ID = %s AND \
-                            booker_ID = %s",[id, booker_id])
+        cursor.execute("SELECT status_id, status_type, payment, condition, start_time, end_time, displayname, name \
+                        FROM Availability NATURAL JOIN Performer NATURAL JOIN User_tbl NATURAL JOIN Bookings \
+                                        NATURAL JOIN Status INNER JOIN Venue ON Venue.venue_ID = Bookings.venue_ID \
+                        WHERE availability_ID = %s AND Bookings.Booker_ID = %s",[id, booker_id])
         #store query result
         cols = [col[0] for col in cursor.description]
         row = cursor.fetchone()
@@ -334,15 +354,15 @@ def get_booker_details(request, id):
                 
 
                 #Offer the booking to the performer
-                cursor.execute("CALL bookPerformer(%s,%s,%s,%s,%s,%s)",
-                                [booker_id, id, payment, condition, start, end])
+                cursor.execute("CALL bookPerformer(%s,%s,%s,%s,%s,%s,%s)",
+                                [booker_id, venue_id, id, payment, condition, start, end])
                                 
                 #prep the email
                 subject = f"You have an offer from{venue}"
                 message = render_to_string('offer_email.html',
                                         {'performer': detail_info['displayname'],
                                         'venue': venue,
-                                        'date': f'{day}/{month}/{year}',
+                                        'date': f'{month}/{day}/{year}',
                                         'domain': get_current_site(request).domain,
                                         'id':id})
                             
@@ -364,8 +384,20 @@ def get_booker_details(request, id):
         
         form = BookingForm(initial={'start':start_time, 'end':end_time})
         
+    #get active venue
+    cursor.execute("SELECT name \
+                    FROM ActiveVenue INNER JOIN Venue ON Venue.venue_ID = ActiveVenue.venue_ID \
+                    WHERE ActiveVenue.booker_ID = %s",[booker_id])
+    active_venue = dictfetchall(cursor)    
+    
+    #format active venue
+    if active_venue == []:
+        active_venue={'name':'No Active Venue'}
+    else:
+        active_venue=active_venue[0]
+        
     #wrap the info in a dict to send out for rendering
-    context = {'obj':detail_info, 'form':form}
+    context = {'obj':detail_info, 'form':form, 'active_venue':active_venue}
 
     return render(request, 'bookerdetail.html', context)
 

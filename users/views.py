@@ -175,7 +175,7 @@ def get_role(id):
     cursor.execute("SELECT role_ID FROM User_tbl \
                     WHERE django_ID = %s",[id])
     
-    return cursor.fetchone()[0]    
+    return cursor.fetchone()[0]  
 
 def activate_view(request, uidb64, token):
     #get the user from the uid
@@ -215,16 +215,6 @@ def load_reg_form(info_form):
 
     #store in the Genre choice field
     info_form.fields['genre'].choices=genre_list
-
-    #get list from database
-    cursor.execute("SELECT venue_ID, name FROM Venue")
-
-    #reformat result to work in choicefield.
-    #add the option to create a new venue. This option is value 0, since the first ID in the table is 1
-    venue_list=[(0,'Create New Venue')]+[x for x in cursor.fetchall()]
-
-    #store in the Genre choice field
-    info_form.fields['venue'].choices=venue_list
 
     return
 
@@ -302,15 +292,24 @@ def register_view(request, *args, **kwargs):
                                     info_form.cleaned_data['averagegigs']])
 
             #insert booker fields into database
-            elif role_id==2:            
-                #get venue_id
-                venue_id=info_form.cleaned_data['venue']
+            elif role_id==2:  
+			    #create record in Booker table
+                cursor.execute("INSERT INTO Booker \
+                                VALUES (DEFAULT, %s);",
+                                    [user_id])      			
                 
                 #if venue_id is 0, that means a new venue must be created
                 if info_form.cleaned_data['venue']=='0':
-                    cursor.execute("INSERT INTO Venue  \
-                                    VALUES (DEFAULT, %s, %s, %s, %s);",
-                                        [info_form.cleaned_data['venuename'],
+				    #get booker id
+                    cursor.execute("SELECT booker_ID FROM Booker \
+                                   WHERE user_ID = %s",[user_id])
+                    booker_id = cursor.fetchone()
+					
+                    #create the venue
+                    cursor.execute("INSERT INTO Venue (venue_ID, booker_ID, name, email, address, phone_number) \
+                                    VALUES (DEFAULT, %s, %s, %s, %s, %s);",
+                                        [booker_id,
+                                        info_form.cleaned_data['venuename'],
                                         info_form.cleaned_data['venueemail'],
                                         info_form.cleaned_data['venueaddress'],
                                         info_form.cleaned_data['venuephone']])
@@ -321,11 +320,10 @@ def register_view(request, *args, **kwargs):
                                     WHERE name = %s",[info_form.cleaned_data['venuename']])
                     venue_id = cursor.fetchone()
             
-                cursor.execute("INSERT INTO Booker  \
-                                VALUES (DEFAULT, %s, %s);",
-                                    [venue_id,
-                                    user_id])
-            
+			        #make this venue active
+                    cursor.execute("INSERT INTO ActiveVenue (booker_ID, venue_ID) \
+                                    VALUES (%s, %s);", [booker_id, venue_id,])
+										
             #set permission based on role
             if role_id==1:
                 permission = Permission.objects.get(name='Can Perform')

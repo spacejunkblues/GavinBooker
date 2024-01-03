@@ -27,9 +27,17 @@
 	</style>
 	{% include 'navbar.html' %}
 	
+	{% load static %}
+	<link rel="stylesheet" href='{% static "css/base.css" %}'>
+	
 	<div style="text-align: right; float:right; padding-right:20px;">
 		<a href="/metrics/problem">Report a Suggestion/Problem</a>
 	</div>
+	
+	{% if perms.auth.can_book and not perms.auth.can_admin %}
+			<span style="padding-left:20px;">{{ active_venue.name }}</span>
+	{% endif %}
+	
 	{% if messages %}
 		{% for message in messages %}
 			<br>

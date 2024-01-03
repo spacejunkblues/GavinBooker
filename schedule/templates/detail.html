@@ -46,7 +46,7 @@
 		<br><br>
 		
 		{% if obj.status_id == 1 %} <!-- status id of 1 is 'Offered'-->
-			<form method='POST'> {% csrf_token %}
+			<form style='padding-left: 20px;'method='POST'> {% csrf_token %}
 				<input type='submit' name='accept' value='Accept' />
 				<input type='submit' name='decline' value='Decline' />
 			</form>
@@ -71,7 +71,7 @@
 		<br><br>
 		
 		<!-- Delete button to delete availability (assuming it's not associated with a booking-->
-		<form method='POST'> {% csrf_token %}
+		<form style='padding-left: 20px;' method='POST'> {% csrf_token %}
 			<input type='submit' name='delete' value='Delete' />
 		</form>
 		

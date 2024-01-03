@@ -77,6 +77,7 @@ def allbookings_view(request, *args, **kwargs):
     cursor.execute("SELECT * FROM reviewers_booked \
                     WHERE status_ID = 2")
    
+	#SORT the query above so that the results are in order by start time
 
     #turn wrap the reviews in a dict to be sent for rendering
     context = {'obj':dictfetchall(cursor)}

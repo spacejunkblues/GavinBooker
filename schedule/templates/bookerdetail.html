@@ -14,6 +14,7 @@
 			<tr>
 				<th>Status</th>
 				<th>Performer</th>
+				<th>Venue</th>
 				<th>Start Time</th>
 				<th>End Time</th>
 				<th>Payment</th>
@@ -22,6 +23,7 @@
 			<tr>
 				<td>{{ obj.status_type }}</td>
 				<td>{{ obj.displayname }}</td>
+				<td>{{ obj.name }}</td>
 				<td>{{ obj.start_time }}</td>
 				<td>{{ obj.end_time }}</td>
 				<td>{{ obj.payment }}</td>
@@ -30,7 +32,7 @@
 		</table>	
 		<br><br>
 		{% if obj.status_id == 2 %} <!-- status id of 2 is 'Booked'-->
-			<form method='POST'> {% csrf_token %}
+			<form style='padding-left: 20px;'method='POST'> {% csrf_token %}
 				<input type='submit' name='complete' value='Performance Completed' />
 				<input type='submit' name='cancel' value='Cancel Booking' />
 			</form>
@@ -56,7 +58,7 @@
 			</tr>
 		</table>
 		<br><br>
-		<form method='POST'> {% csrf_token %}
+		<form style='padding-left: 20px;' method='POST'> {% csrf_token %}
 			{{ form.as_p }}
 			<input type='submit' name='offer' value='Offer' />
 		</form>
