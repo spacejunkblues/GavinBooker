@@ -1,7 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-
+	<style>
+		input, label{
+			display:block;
+		}
+	</style>
 	<h1> Create a New Account</h1>
 	<br><br>
 	
@@ -35,7 +39,7 @@
 		{
 			let createnewView = null;//shows all elements
 			
-			if(venueEle.value == "0" && bookView == null)
+			if(document.querySelector('input[name="venue"]:checked').value == "0" && bookView == null)
 				createnewView=null; //shows all venue data fields options
 			else
 				createnewView='none'; //hides all venue data fields options
@@ -63,7 +67,7 @@
 			document.getElementById('id_description').parentElement.style.display = performView;
 			document.getElementById('id_rate').parentElement.style.display = performView;
 			document.getElementById('id_averagegigs').parentElement.style.display = performView;
-			document.getElementById('id_venue').parentElement.style.display = bookView;
+			document.getElementById('id_venue').style.display = bookView;//radio button's parent is the form
 			
 			//show or hide the rest of the bookers view depending on what's selected in the venue dropdown
 			switchcreatevenue();

@@ -57,12 +57,40 @@
 	
 	<!-- display Booker info -->
 	{% elif role_id == 2 %}		
-		<div style="font-size:12px">
-			{{ info.name }}<br>
-			{{ info.vphone_number }}<br>
-			{{ info.vemail }}<br>
-			{{ info.address }}<br>
-		</div>
+		<h3>Venues created by the booker</h3>
+		<table class="tablelist">
+			<tr>
+				<th>Venue Name</th>
+				<th>Phone Number</th>
+				<th>Email</th>
+				<th>Address</th>
+			</tr>
+			{% for venue in venue_info%}
+				<tr>
+					<td>{{ venue.name }}</td>
+					<td>{{ venue.phone_number }}</td>
+					<td>{{ venue.email }}</td>
+					<td>{{ venue.address }}</td>
+				</tr>
+			{% endfor %}
+		</table><br><br>
+		<h3>Venues shared with the booker</h3>
+		<table class="tablelist">
+			<tr>
+				<th>Venue Name</th>
+				<th>Phone Number</th>
+				<th>Email</th>
+				<th>Address</th>
+			</tr>
+			{% for venue in sharedvenue_info%}
+				<tr>
+					<td>{{ venue.name }}</td>
+					<td>{{ venue.phone_number }}</td>
+					<td>{{ venue.email }}</td>
+					<td>{{ venue.address }}</td>
+				</tr>
+			{% endfor %}
+		</table><br><br>
 		<h3>Roster</h3>
 		<table class="tablelist">
 			<tr>
@@ -83,6 +111,6 @@
 					<td>{{ performer.description }}</td>
 				</tr>
 			{% endfor %}
-		</table>
+		</table><br><br><br><br>
 	{% endif %}
 {% endblock %}

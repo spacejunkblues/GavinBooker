@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'roster',
     'metrics',
     'admindash',
+    'venue',
 ]
 
 MIDDLEWARE = [

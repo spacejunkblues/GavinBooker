@@ -19,7 +19,7 @@ def get_booker_id(django_id):
     #Connect to the database
     cursor = connection.cursor()
     
-    #get performer id from the django ID
+    #get booker id from the django ID
     cursor.execute("SELECT booker_ID \
                     FROM Booker NATURAL JOIN User_tbl \
                     WHERE django_ID = %s;",[django_id])
@@ -76,16 +76,12 @@ def invite_view(request, *args, **kwargs):
             #get database connection
             cursor = connection.cursor()
             
-            #get Venue's name
-            cursor.execute("WITH bookerinfo AS \
-                                (SELECT id, user_id, django_id, booker_id, venue_id \
-                                FROM auth_user JOIN User_tbl NATURAL JOIN Booker \
-                                ON User_tbl.django_ID = auth_user.ID \
-                                WHERE auth_user.id = %s) \
-                            SELECT name \
-                            FROM bookerinfo NATURAL JOIN Venue", 
+            #get Bookers's name
+            cursor.execute("SELECT displayname \
+							FROM User_tbl \
+							WHERE django_id = %s", 
                             [request.user.id])
-            venue=cursor.fetchone()[0]
+            bookername=cursor.fetchone()[0]
             
             #check to make sure the email isn't already on the list
             cursor.execute("SELECT COUNT(*) \
@@ -101,7 +97,7 @@ def invite_view(request, *args, **kwargs):
                 #setup email  
                 subject = "Gavin Booking Invitation"
                 message = render_to_string('invite_email.html',
-                                {'venue': venue,
+                                {'bookername': bookername,
                                 'domain': get_current_site(request).domain})
         
                 #email the performer an invintation

@@ -76,6 +76,11 @@ a:active {
 			<a href="/roster" class="nav-items"><img class='icon' src="{% static 'images/roster_icon.PNG' %}"></a>
 		{% endif %}
 		
+		{% if perms.auth.can_book and not perms.auth.can_admin %}
+		<!--This is the Venue Icon-->
+			<a href="/venue" class="nav-items"><img class='icon' src="{% static 'images/venue_icon.PNG' %}"></a>
+		{% endif %}
+		
 		{% if perms.auth.can_admin %}
 		<!--This is the Admindash Icon-->
 			<a href="/" class="nav-items"><img class='icon' src="{% static 'images/admindash_icon.PNG' %}"></a>

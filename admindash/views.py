@@ -29,7 +29,11 @@ def userdetail_view(request, r_id, id, *args, **kwargs):
     #only let admin view the dasboard
     if role_id != 3:
         return redirect('/schedule')
-    
+	
+	#init vars
+    venue_info = []
+    sharedvenue_info = []
+	
     #Connect to the database
     cursor = connection.cursor()
     
@@ -55,8 +59,7 @@ def userdetail_view(request, r_id, id, *args, **kwargs):
         cursor.execute("SELECT payment, condition, status_type, start_time, end_time, location, name \
                         FROM Bookings NATURAL JOIN Status \
                             FULL OUTER JOIN Availability ON Availability.availability_id = Bookings.availability_id \
-                            LEFT JOIN Booker ON Booker.booker_id = Bookings.booker_id \
-                            LEFT JOIN Venue ON Venue.venue_id = Booker.venue_id \
+                            LEFT JOIN Venue ON Venue.venue_id = Bookings.venue_id \
                         WHERE performer_id = %s \
                         ORDER BY start_time", [performer_id])
         #build the context
@@ -67,17 +70,31 @@ def userdetail_view(request, r_id, id, *args, **kwargs):
         booker_id = id
         
         #get all booker specific info
-        cursor.execute("SELECT django_id, displayname, User_tbl.email, User_tbl.phone_number, user_type, name, \
-                            Venue.email AS vemail, address, Venue.phone_number as vphone_number \
+        cursor.execute("SELECT django_id, displayname, User_tbl.email, User_tbl.phone_number, user_type \
                         FROM Booker NATURAL JOIN User_tbl NATURAL JOIN Role LEFT JOIN Venue \
-                        ON Venue.venue_id = booker.venue_id \
-                        WHERE booker_id = %s", [booker_id])
+                        ON Venue.booker_id = Booker.booker_id \
+                        WHERE Booker.booker_id = %s", [booker_id])
         #build the context
         info = dictfetchall(cursor)
         
         #Should only return a single row
         if info != []:
             info = info[0]
+			
+		#get Venues that the Booker owns
+        cursor.execute("SELECT * \
+						FROM Venue \
+						WHERE Booker_id = %s", [booker_id])
+        #build the context
+        venue_info = dictfetchall(cursor)
+		
+		#get SharedVenues
+        cursor.execute("SELECT * \
+						FROM SharedVenues INNER JOIN Venue \
+						ON Venue.venue_id = SharedVenues.venue_id \
+						WHERE SharedVenues.Booker_id = %s", [booker_id])
+        #build the context
+        sharedvenue_info = dictfetchall(cursor)
             
         #get the bookers roster from the database
         cursor.execute("SELECT performer_ID, description, rate, displayname, \
@@ -105,7 +122,8 @@ def userdetail_view(request, r_id, id, *args, **kwargs):
             #send message to admin
             messages.success(request,"Confirmation email was sent to the user's email on file")
         
-    return render(request, 'userdetail.html', {'obj':tableinfo,'role_id':users_role_id, 'info':info})
+    return render(request, 'userdetail.html', {'obj':tableinfo,'role_id':users_role_id, 'info':info,
+												'venue_info':venue_info,'sharedvenue_info':sharedvenue_info})
 
 @login_required(login_url='/users/login_user')
 def dashboard_view(request, *args, **kwargs):
@@ -119,9 +137,9 @@ def dashboard_view(request, *args, **kwargs):
     #get all user info
     cursor.execute("SELECT User_tbl.role_id, user_type, booker_id, performer_id, displayname, User_tbl.email, phone_number, \
                         name, rate, genre_type, last_login, is_active, date_joined \
-                    FROM User_tbl LEFT JOIN (SELECT user_id, booker_id, name \
+                    FROM User_tbl LEFT JOIN (SELECT user_id, Booker.booker_id, name \
                                             FROM Booker LEFT JOIN Venue \
-                                            ON Booker.venue_id = Venue.venue_id) as B ON B.user_id = User_tbl.user_id \
+                                            ON Booker.booker_id = Venue.booker_id) as B ON B.user_id = User_tbl.user_id \
                                 LEFT JOIN (SELECT user_id, performer_id, rate, genre_type \
                                             FROM Performer LEFT JOIN Genre \
                                             ON Performer.genre_id = Genre.genre_id) as P ON P.user_id = User_tbl.user_id \

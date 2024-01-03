@@ -185,17 +185,16 @@ def gigs_view(request, year = '', month = '', *args, **kwargs):
     cursor = connection.cursor()
     
     #get data
-    cursor.execute("SElECT rating, Performer.performer_id as performer, Booker.booker_id as booker, \
-                        Bookings.booking_id as  booking, comment, status_id, payment, condition, start_time, \
+    cursor.execute("SElECT Performer.performer_id as performer, Booker.booker_id as booker, \
+                        Bookings.booking_id as  booking, status_id, payment, condition, start_time, \
                         end_time, location, description, rate, average, Genre.genre_type as genre, name, address, \
                         T.displayname as performerdisplay, User_tbl.displayname as bookerdisplay \
-                    FROM Review FULL OUTER JOIN Bookings ON Bookings.booking_id = Review.booking_id \
-                                NATURAL JOIN Availability \
+                    FROM Bookings NATURAL JOIN Availability \
                                 FULL OUTER JOIN Performer ON Performer.performer_id = Availability.performer_id \
                                 LEFT JOIN Gigs ON Performer.performer_id = Gigs.performer_id \
                                 INNER JOIN Genre ON Genre.genre_id = Performer.genre_id \
                                 FULL OUTER JOIN Booker ON Booker.booker_id = Bookings.booker_id \
-                                LEFT JOIN Venue ON Venue.venue_id = Booker.venue_id \
+                                LEFT JOIN Venue ON Venue.venue_id = Bookings.venue_id \
                                 LEFT JOIN User_tbl as T ON T.user_id = Performer.user_id \
                                 LEFT JOIN User_tbl ON User_tbl.user_id = Booker.user_id \
                     WHERE EXTRACT(MONTH FROM start_time) = %s AND \
@@ -209,8 +208,7 @@ def gigs_view(request, year = '', month = '', *args, **kwargs):
     #used for groupby
     gigs_df['avg_gigs']=gigs_df['average'].fillna(0)
     gigs_df['payment']=gigs_df['payment'].astype(float).fillna(0)
-    aggdict = {'rating':'mean',
-           'performer':'count',
+    aggdict = {'performer':'count',
            'booker':'count',
            'booking':'count',
            'payment':'sum',
@@ -270,7 +268,7 @@ def gigs_view(request, year = '', month = '', *args, **kwargs):
         
     #table of Venue bookings and payments
     try:
-        venue_bookings_table = gigs_df.to_dict('records')
+        venue_bookings_table = gigs_df.groupby('name').agg(aggdict).reset_index().to_dict('records')
     except:
         venue_bookings_table = ''
         messages.error(request,"no data for Venue Gigs Table")

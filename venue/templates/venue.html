@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+	{% load static %}
+
+	
+	
+	<h1>Venues</h1>	
+	<br>
+	<!--<div style="font-weight:bold;">Currently booking as: </div>
+	<div>
+		{{ active_venue.name }}<br>
+	</div>
+	<br><br>-->
+	<!-- display roster info -->
+	<table class="tablelist">
+		<tr>
+			<th>Activate</th>
+			<th>Name</th>
+			<th>Email</th>
+			<th>Address</th>
+			<th>Phone Number</th>
+			<!--<th>Venue's Owner</th> place holder for future shared feature-->
+		</tr>
+		{% for venue in venues %}
+			<tr>
+				<td>
+					{% if active_venue.id != venue.id %}
+						<!--this is the Activate button-->
+						<a href="/venue/activate/{{ venue.id }}" class="nav-items">
+							<img class='icon' src="{% static 'images/activate_icon.png' %}">
+						</a>
+					{% endif %}
+					
+				</td>
+				<td>
+					<!--<a href="/roster/{{ performer.performer_id }}">  this will be added feature to edit and share-->
+					{{ venue.name }}
+					<!--</a>-->
+				</td>
+				<td>{{ venue.email }}</td>
+				<td>{{ venue.address }}</td>
+				<td>{{ venue.phone_number }}</td>
+				<!--<td>{{ venue.displayname }}</td> place holder for future shared feature-->
+			</tr>
+		{% endfor %}
+	</table>
+	
+	<br><br><br>
+	<span style='padding-left: 20px;'>Need to book for a venue not listed?</span><br>
+	<a style='padding-left: 20px;' href="/venue/create">Click to Create a New Venue</a>
+	<br><br><br>
+
+
+
+
+{% endblock %}

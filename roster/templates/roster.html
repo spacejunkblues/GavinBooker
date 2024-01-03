@@ -38,14 +38,14 @@
 			</tr>
 		{% endfor %}
 	</table>
-	<form method='POST'> {% csrf_token %}
+	<form style='padding-left: 20px;' method='POST'> {% csrf_token %}
 	{{ form }}
 	<input type='submit' value='Add' />
 	</form>
 	
 	<br><br><br>
-	Can't find a certain performer?<br>
-	<a href="/roster/invite">Click to Invite a Performer</a>
+	<span style='padding-left: 20px;'>Can't find a certain performer?</span><br>
+	<a style='padding-left: 20px;' href="/roster/invite">Click to Invite a Performer</a>
 	<br><br><br>
 
 		
