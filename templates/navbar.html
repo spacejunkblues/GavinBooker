@@ -40,7 +40,7 @@ a:active {
 	top: 63px;
 	display: block;
 	background-color: #04571B;
-	background-color: rgba(4,87,27,.7);
+	background-color: rgba(4,87,27,1);
 	width: 200px;
 	height: 100px;
 }
@@ -57,10 +57,13 @@ a:active {
 				<img class="icon" src="{% static 'images/hamburger_icon.PNG' %}" alt="Profile"  align="Left">
 			</a>
 			<div class="menu" id="MyPopupMenu">
-				<div id="myName">
+				<div id="myName" style="padding-bottom: 10px;">
 					<div class="nav-items">Logged in as {{ user.username }}</div>
 				</div>
-				<div id="myUserMenu"">
+				<div>
+					<a href="/users/edit" class="nav-items">Edit Profile</a>
+				</div>
+				<div id="myUserMenu">
 					<a href="/users/logout_user" class="nav-items">Logout</a>
 				</div>
 			</div>

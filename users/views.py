@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from . forms import LoginForm, RegForm, PasswordResetForm
+from . forms import LoginForm, RegForm, PasswordResetForm, EditForm, PerformerEditForm
 from django.contrib.auth.forms import UserCreationForm, SetPasswordForm
 from django.contrib.auth.models import User, Permission
 from django.db import connection
@@ -13,6 +13,13 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.core.mail import send_mail
+
+#fucntion provided by Django documentation
+#https://docs.djangoproject.com/en/4.0/topics/db/sql/
+def dictfetchall(cursor):
+    "Return all rows from a cursor as a dict"
+    columns = [col[0] for col in cursor.description]
+    return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
 def login_view(request, *args, **kwargs):
     #check to see if the submit button was pressed
@@ -351,6 +358,132 @@ def register_view(request, *args, **kwargs):
     context = {'cred':cred_form, 'info':info_form}
     
     return render(request, 'register.html',context)
+
+#controls rending the edit landing page
+#No URL tied to this, it's called after an update to the edit page
+def edit_landing(request, role_id, user_id):	
+	#get connection from database
+	cursor = connection.cursor()
+	
+	#get user info for all types of users
+	cursor.execute("SELECT role_ID, displayname, User_tbl.email, phone_number, username \
+					FROM User_tbl INNER JOIN auth_user ON auth_user.id = User_tbl.django_ID \
+					WHERE django_ID = %s",[request.user.id])
+	user_info = dictfetchall(cursor)
+	
+	#if Performer:
+	if role_id == 1:
+		#get performer specific data
+		cursor.execute("SELECT genre_type, description, rate \
+						FROM Performer NATURAL JOIN Genre \
+						WHERE user_ID = %s",[user_id])
+		performer_info = dictfetchall(cursor)
+		
+		#add to user_info			
+		user_info[0].update(performer_info[0])			
+	
+	return render(request, 'edit_landing.html', {'info':user_info[0]})
+
+#edit users profile
+@login_required(login_url='/users/login_user')
+def edit_view(request, *args, **kwargs):
+	#get role
+	role_id = get_role(request.user.id)
+	
+	#get connection from database
+	cursor = connection.cursor()
+	
+	#get user_id
+	cursor.execute("SELECT user_ID FROM User_tbl \
+					WHERE django_ID = %s",[request.user.id])
+	user_id=cursor.fetchone()[0]  
+	
+    #check for post
+	if request.method == "POST":
+		#initialize the form object
+		user_form = EditForm(request.POST)
+		performer_form = PerformerEditForm(request.POST)
+        
+        #format reg form
+		load_reg_form(performer_form)
+        
+        #Data is valid (data types are correct)
+		if user_form.is_valid() and (performer_form.is_valid() or role_id != 1):
+			#update data
+			cursor.execute("UPDATE User_tbl \
+							SET displayname = %s, \
+								phone_number = %s \
+							WHERE django_ID = %s",[user_form.cleaned_data['displayname'],
+													user_form.cleaned_data['phone'],
+													request.user.id])
+			
+			#update performer info
+			if role_id == 1:
+				cursor.execute("UPDATE Performer \
+								SET genre_id = %s, \
+									description = %s, \
+									rate = %s \
+								WHERE user_ID = %s",[performer_form.cleaned_data['genre'],
+														performer_form.cleaned_data['description'],
+														performer_form.cleaned_data['rate'],
+														user_id])
+		else:
+			messages.error(request, ('Something went wrong'))
+		
+		#send user to confirmation page
+		return edit_landing(request, role_id, user_id)
+	
+	#load current data
+	else:		
+		#get user info for all types of users
+		cursor.execute("SELECT role_ID, displayname, User_tbl.email, phone_number, username \
+						FROM User_tbl INNER JOIN auth_user ON auth_user.id = User_tbl.django_ID \
+						WHERE django_ID = %s",[request.user.id])
+		user_info = dictfetchall(cursor)
+		
+		#make sure there is a user
+		if user_info == []:
+			return redirect('/')
+		
+		#if Performer:
+		if role_id == 1:
+			#get performer specific data
+			cursor.execute("SELECT genre_ID, description, rate \
+							FROM Performer \
+							WHERE user_ID = %s",[user_id])
+			performer_info = dictfetchall(cursor)
+				
+			#make sure there is a performer record
+			if performer_info == []:
+				return redirect('/')
+			
+			#add to user_info			
+			user_info[0].update(performer_info[0])			
+
+		#shed the list (should only need one row)
+		user_info=user_info[0]
+		
+		#load forms with default data
+		user_form = EditForm(initial={'displayname':user_info['displayname'],
+										'phone':user_info['phone_number']})
+
+		#load performer info
+		if role_id == 1:
+			init_dict = {'genre':user_info['genre_id'],
+						'description':user_info['description'],
+						'rate':user_info['rate']}
+		else:
+			init_dict ={}
+		performer_form = PerformerEditForm(initial=init_dict)
+		
+		#format reg form
+		load_reg_form(performer_form)
+		
+	#end else for POST
+
+	return render(request, 'edit.html', {'user_form':user_form,
+										'performer_form':performer_form,
+										'info':user_info})
 
 #function will update FK in the User_tbl
 def update_dummy_id(user_id, django_id):
