@@ -140,5 +140,22 @@ class RegForm(forms.Form):
                 raise forms.ValidationError("Fill in Average Gigs Per Month field")
         return data
 		
-		
 
+class EditForm(forms.Form):
+    #display name
+    displayname = forms.CharField(max_length=20, strip=True,
+                                label='Display Name')
+								
+	#phone number
+    phone = forms.CharField(max_length=15, strip=True)
+
+class PerformerEditForm(forms.Form):
+	#Genre played (If Performer) The choices will be pulled from the database in the view
+    genre = forms.ChoiceField(required=False)
+    
+    #discription(If Performer)
+    description = forms.CharField(widget=forms.Textarea, max_length=200, required=False)
+    
+    #rate(If Performer)
+    rate = forms.DecimalField(max_digits=7, decimal_places=2, label="Hourly Rate", required=True)
+	

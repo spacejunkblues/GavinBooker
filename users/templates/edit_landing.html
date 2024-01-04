@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<style>
+		input, label{
+			display:block;
+		}
+		.editinfo{
+			padding-left: 20px;
+		}
+	</style>
+	
+	<h1>Profile Updated</h1>
+	<br>
+
+	<span style="padding-left: 20px;">Username: {{info.username}}</span>
+	<span style="padding-left: 20px;">Email: {{info.email}}</span>
+	<br><br>
+
+	<div class='editinfo'>
+		<div>Display Name: {{info.displayname}}</div><br>
+		<div>Phone Number: {{info.phone_number}}</div><br>
+		{% if info.role_id == 1 %}
+			<div>Genre: {{info.genre_type}}</div><br>
+			<div>Hourly Rate: {{info.rate}}</div><br>
+			<div>Description: {{info.description}}</div><br>
+		{% endif %}
+	</div>
+		
+
+
+{% endblock %}
