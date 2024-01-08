@@ -1,8 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from . forms import LoginForm, RegForm, PasswordResetForm, EditForm, PerformerEditForm
-from django.contrib.auth.forms import UserCreationForm, SetPasswordForm
+from . forms import LoginForm, RegForm, PasswordResetForm, EditForm, PerformerEditForm, UserCreationForm, SetPasswordForm
 from django.contrib.auth.models import User, Permission
 from django.db import connection
 from django.contrib.auth.decorators import login_required

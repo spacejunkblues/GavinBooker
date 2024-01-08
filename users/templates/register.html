@@ -9,12 +9,17 @@
 	<h1> Create a New Account</h1>
 	<br><br>
 	
-
-	<form method='POST'> {% csrf_token %}
-	{{ cred.as_p }}
-	{{ info.as_p }}
-	<input id='submit' type='submit' value='Submit' />
-	</form>
+	<div class="bg rounded-4 py-5 px-4 px-md-5">
+		<div class="row gx-5 justify-content-center">
+			<div class="col-lg-8 col-xl-6">
+				<form method='POST'> {% csrf_token %}
+				{{ cred.as_p }}
+				{{ info.as_p }}
+				<input class="form-control" style="width: 100px;" id='submit' type='submit' value='Submit' />
+				</form>
+			</div>
+		</div>
+	</div>
 	
 	<script>
 		const roleEle = document.getElementById('id_role')
@@ -39,7 +44,7 @@
 		{
 			let createnewView = null;//shows all elements
 			
-			if(document.querySelector('input[name="venue"]:checked').value == "0" && bookView == null)
+			if(venueEle.value == "0" && bookView == null)
 				createnewView=null; //shows all venue data fields options
 			else
 				createnewView='none'; //hides all venue data fields options
@@ -67,7 +72,7 @@
 			document.getElementById('id_description').parentElement.style.display = performView;
 			document.getElementById('id_rate').parentElement.style.display = performView;
 			document.getElementById('id_averagegigs').parentElement.style.display = performView;
-			document.getElementById('id_venue').style.display = bookView;//radio button's parent is the form
+			document.getElementById('id_venue').parentElement.style.display = bookView;
 			
 			//show or hide the rest of the bookers view depending on what's selected in the venue dropdown
 			switchcreatevenue();

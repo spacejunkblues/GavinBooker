@@ -1,12 +1,35 @@
 from django import forms
 from django.db import connection
+from django.contrib.auth.forms import UserCreationForm, SetPasswordForm
 
+class UserCreationForm(UserCreationForm):
+    def __init__(self, *args, **kwargs):
+        super(UserCreationForm, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control'
+			
+class SetPasswordForm(SetPasswordForm):
+    def __init__(self, *args, **kwargs):
+        super(SetPasswordForm, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control'
+			
 class LoginForm(forms.Form):
     userName = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput())
+	
+    def __init__(self, *args, **kwargs):
+        super(LoginForm, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control'
     
 class PasswordResetForm(forms.Form):
     userName = forms.CharField(label = "User Name")
+	
+    def __init__(self, *args, **kwargs):
+        super(PasswordResetForm, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control'
     
 class RegForm(forms.Form):
     #performer or booker
@@ -15,7 +38,7 @@ class RegForm(forms.Form):
     #display name
     displayname = forms.CharField(max_length=20, strip=True,
                                 label='Display Name',
-                                help_text="This name is how the public will see you. Can't be changed after registration.. yet")
+                                help_text="This name is how the public will see you.")
     
     #email
     email = forms.EmailField(max_length=50)
@@ -41,8 +64,7 @@ class RegForm(forms.Form):
                                     required=False)
     
     #Venue (drop down or create new) (If booker)
-    venue = forms.ChoiceField(widget=forms.RadioSelect,
-	                          choices=[(0,'Create New Venue Now'),(1,'Create or Join a Venue Later')],required=False,
+    venue = forms.ChoiceField(choices=[(0,'Create New Venue Now'),(1,'Create or Join a Venue Later')],required=False,
 	                          label="")
         #Name (If booker and creating new venue)
     venuename = forms.CharField(max_length=70, strip=True, required=False, label='Venue Name')
@@ -56,6 +78,11 @@ class RegForm(forms.Form):
     #phone number (If booker and creating new venue)
     venuephone = forms.CharField(max_length=15, strip=True, required=False, label='Venue Phone')
     
+    def __init__(self, *args, **kwargs):
+        super(RegForm, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control'
+			
     #validation function to make sure field isn't blank
     def clean_venuename(self):
         data = self.cleaned_data['venuename']
@@ -148,6 +175,11 @@ class EditForm(forms.Form):
 								
 	#phone number
     phone = forms.CharField(max_length=15, strip=True)
+	
+    def __init__(self, *args, **kwargs):
+        super(EditForm, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control'
 
 class PerformerEditForm(forms.Form):
 	#Genre played (If Performer) The choices will be pulled from the database in the view
@@ -158,4 +190,9 @@ class PerformerEditForm(forms.Form):
     
     #rate(If Performer)
     rate = forms.DecimalField(max_digits=7, decimal_places=2, label="Hourly Rate", required=True)
+
+    def __init__(self, *args, **kwargs):
+        super(PerformerEditForm, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control'
 	

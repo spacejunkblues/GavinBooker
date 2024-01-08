@@ -5,12 +5,30 @@
 <style>
 table td, table td * {
     vertical-align: top;
-	width: 25px;
 }
 table th, table th * {
     vertical-align: top;
-	width: 70px;
     text-align: left;
+}
+table{
+	width:100%;
+	padding-left: 20px;
+	border-collapse: separate;
+	table-layout: fixed;
+}
+
+/*Desktop phones*/
+@media screen and (min-width: 901px) {
+	.mb {
+		display: none;
+	}
+}
+
+/*Mobile phones*/
+@media screen and (max-width: 900px) {
+	.desktop {
+		display: none;
+	}
 }
 </style>
 
@@ -24,8 +42,8 @@ table th, table th * {
 			</span></span>
 		</p> 
 		
-		
-		<table style="width:100%" cellspacing="0">
+		<!------------------------- Desktop Calendar ---------------------------->
+		<table class="desktop" cellspacing="0">
 		<!-- The header row of the calendar are the days of the week -->
 		<tr>
 		{% for weekday in month.weekdays %}
@@ -67,21 +85,195 @@ table th, table th * {
 						<br>
 					{% endif %}
 					{% for event in day.events %}
-						<!-- display availability times -->
-						<a href="/schedule/detail/{{ event.id }}">
-						{{ event.displayname }}				<!--  Performer Name -->
-						{{ event.start }} - {{ event.end }} <!--  times -->
-						{% if event.status != None %}		<!--  Status of booking -->
-							{{ event.status }}
-						{% endif %}</a><br><br>
+						<!--this is the event element-->
+						<div id="{{ event.id }}" class="eventclickable" style="cursor: pointer;">
+							{% if event.status == "Booked" %}
+							<div style="background: #04571B; color: #F8F8FF; border-radius: 15px;padding:5px;">
+							{% elif event.status == "Offered" %}
+							<div style="background: #808080; color: #F8F8FF; border-radius: 15px;padding:5px;">
+							{% elif event.status == "Cancelled" %}
+							<div style="background: #808080; color: #F8F8FF; border-radius: 15px;padding:5px;">
+							{% else %}
+							<div style="background: white; border: 1px solid; border-radius: 15px;padding:5px;">
+							{% endif %}
+								<span style="font-size: 14px;">{{ event.displayname }}</span>				<!--  Performer Name -->
+								<div style="font-size: 12px;display: flex;justify-content:space-between;">
+									{{ event.start }}-{{ event.end }} <!--  times -->
+									<span>{% if event.status != None %}<!--  Status of booking -->
+											{% if event.status == "Cancelled" %}
+											<span style="color: #E85B5B;">
+											{% else %}
+											<span>
+											{% endif %}
+											{{ event.status }}
+											</span>
+										{% else %}
+											Avail
+										{% endif %}</span>
+								</div>
+							</div>
+						</div>
 					{% endfor %}
-					<br>
+					
 				{% endif %}
 				</td>
 			{% endfor %}
 			</tr>
 		{% endfor %}
 		</table>
+
+		<!------------------------- Mobile Calendar ---------------------------->
+		<table class="mb" cellspacing="0">
+		<!-- The header row of the calendar are the days of the week -->
+		<tr>
+		{% for weekday in month.weekdays %}
+			<th>{{weekday|slice:":1"}}</th>
+		{% endfor %}
+		</tr>
+		{% for week in month.cal_data %}
+			<!-- This row displays the date of the week -->
+			<tr>	
+			{% for day in week %}
+				<!-- highlight the day if it's the current day -->
+				{% if month.current_d == day.date and month.current_m == month.month and month.current_y == month.year %}
+				<td bgcolor="E7E7E7"><!--gray-->
+				{% else %}
+				<td>
+				{% endif %}
+				
+				<!-- display day as number -->
+				{% if day != None %}
+					{{ day.date }} <br>
+				{% endif %}
+				</td>
+			{% endfor %}
+			</tr>
+			<!-- This row displays all events on each day -->
+			<tr style="height:50px">	
+			{% for day in week %}
+				<!-- highlight the day if it's the current day -->
+				{% if month.current_d == day.date and month.current_m == month.month and month.current_y == month.year %}
+				<td style="position:relative" bgcolor="E7E7E7"><!--gray-->
+				{% else %}
+				<td style="position:relative">
+				{% endif %}
+				
+					<!-- This adds events for current day -->
+					{% if day != None %}
+						<!--this is the date element-->
+						<div id="{{ day.date }}" class="dateclickable" style="cursor: pointer;position:absolute; width: 100%;height: 100%;">
+							{% if role != 2 %}<!--  Add button, not for Bookers -->
+								<a href="/schedule/add/{{ month.year }}/{{ month.month }}/{{ day.date }}">Add</a>
+								<br>
+							{% endif %}
+							{% for event in day.events %}
+								{% if forloop.counter < 4 %}
+								<!--this is the event element-->
+								<div style="height:10px;">
+									{% if event.status == "Booked" %}
+									<div style="background: #04571B; color: #F8F8FF; border-radius: 8px;height:10px;">
+									{% elif event.status == "Offered" %}
+									<div style="background: #808080; color: #F8F8FF; border-radius: 15px;height:10px;">
+									{% elif event.status == "Cancelled" %}
+									<div style="background: #808080; color: #F8F8FF; border-radius: 15px;height:10px;">
+									{% else %}
+									<div style="background: white; border: 1px solid; border-radius: 15px;height:10px;">
+									{% endif %}
+										<span style="font-size: 4px;">-</span>				<!--  Performer Name -->
+									</div>
+								</div>
+								{% elif forloop.counter == 4 %}
+									+
+								{% endif %}
+							{% endfor %}
+						</div>
+					{% endif %}
+				</td>
+			{% endfor %}
+			</tr>
+		{% endfor %}
+		</table>
+		
+		<!--Mobile Date popup-->
+		<div style="padding-left:20px; display:none;" class="mb" id="mbpopup">				
+			<!--this is the Event list -->
+			{% for week in month.cal_data %}
+				{% for day in week %}
+					<div id="date_{{ day.date }}" class="alldates" style="display:none;">
+						<br><br>{{month.monthname}} {{day.date}}, {{month.year}}<br><br>
+						{% for event in day.events %}
+							<!--this is the event element-->
+							<div id="{{ event.id }}" class="eventclickable" style="cursor: pointer;">
+								{% if event.status == "Booked" %}
+								<div style="background: #04571B; color: #F8F8FF; border-radius: 15px;padding:5px;">
+								{% elif event.status == "Offered" %}
+								<div style="background: #808080; color: #F8F8FF; border-radius: 15px;padding:5px;">
+								{% elif event.status == "Cancelled" %}
+								<div style="background: #808080; color: #F8F8FF; border-radius: 15px;padding:5px;">
+								{% else %}
+								<div style="background: white; border: 1px solid; border-radius: 15px;padding:5px;">
+								{% endif %}
+									<span style="font-size: 14px;">{{ event.displayname }}</span>				<!--  Performer Name -->
+									<div style="font-size: 12px;display: flex;justify-content:space-between;">
+										{{ event.start }}-{{ event.end }} <!--  times -->
+										<span>{% if event.status != None %}<!--  Status of booking -->
+												{% if event.status == "Cancelled" %}
+												<span style="color: #E85B5B;">
+												{% else %}
+												<span>
+												{% endif %}
+												{{ event.status }}
+												</span>
+											{% else %}
+												Avail
+											{% endif %}</span>
+									</div>
+								</div>
+							</div>
+						{% endfor %}
+					</div>
+				{% endfor %}
+			{% endfor %}
+		</div>
 	</div>
+	
+<script>
+	//get all event elements
+	const eventElements = document.querySelectorAll(".eventclickable");
+	//get all date elements
+	const dateElements = document.querySelectorAll(".dateclickable");
+	//get all dates that load below the calendar
+	const allEventDateElements = document.querySelectorAll(".alldates");
+	
+	//Make availability and booking event clickable
+	for(let i = 0; i < eventElements.length; i++)
+	{
+		eventElements[i].addEventListener('click',DetailView);
+	}	
+	//Make dates clickable for mobile use
+	for(let i = 0; i < dateElements.length; i++)
+	{
+		dateElements[i].addEventListener('click',DatePopUp);
+	}
+	
+	function DetailView(event)
+	{
+		window.location = "/schedule/detail/".concat(this.id);
+	}
+	function DatePopUp(event)
+	{
+		//hide all dates
+		for(let i = 0; i < allEventDateElements.length; i++)
+		{
+			allEventDateElements[i].style.display = 'none';
+		}
+		
+		//show date selected
+		document.getElementById('mbpopup').style.display = null;
+		document.getElementById("date_".concat(this.id)).style.display = null;
+		document.getElementById("date_".concat(this.id)).scrollIntoView();
+		//document.getElementById(this.id).style = "border: 1px solid";
+	}
+</script>
 
 {% endblock %}

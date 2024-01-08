@@ -68,7 +68,7 @@ class MonthCal:
         #if this is the first time an event is added. start a list
         if self.events[day] == None:
             self.events[day] = []
-            
+        
         #add event info the event list for that day
         self.events[day].append({'id': event_id, 'start': start, 'end':end, 'displayname':displayname, 'status':status})
         

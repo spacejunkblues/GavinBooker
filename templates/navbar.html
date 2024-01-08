@@ -22,7 +22,7 @@ a:active {
 	color: #F8F8FF;
 }
 .logo{
-	height: 63px; /* this depends on the padding from nav-bar. This should match the absolute height of the banner*/
+	height: 60px; /* this depends on the padding from nav-bar. This should match the absolute height of the banner*/
 }
 .icon{
 	height: 25px;
@@ -37,7 +37,7 @@ a:active {
 .menu{
 	position: absolute;
 	margin: auto;
-	top: 63px;
+	top: 60px;
 	display: block;
 	background-color: #04571B;
 	background-color: rgba(4,87,27,1);
@@ -48,7 +48,9 @@ a:active {
 
 {% load static %}
 
+<!-- Place holder for GavinGigs Icon
 <img align="right" style="padding-right:20px;" class="logo" src="{% static 'images/gb_logo.PNG' %}">
+-->
 <div class="nav-bar">
 	{% if user.is_authenticated %}
 		<!--The three bar icon-->
