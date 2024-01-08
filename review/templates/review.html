@@ -1,10 +1,28 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+	<style>
+		/*Desktop phones*/
+		@media screen and (min-width: 901px) {
+			.mb {
+				display: none;
+			}
+		}
+		
+		/*Mobile phones*/
+		@media screen and (max-width: 900px) {
+			.desktop {
+				display: none;
+			}
+		}
+	</style>
+	
 	<h1>Showtimes</h1>
 	<br><br>
 
-	<table class="tablelist">
+	<!-- display desktop -->
+	<table class="tablelist desktop">
 	<tr>
 		<th>Performer</th>
 		<th>Date</th>
@@ -13,10 +31,30 @@
 	</tr>
 	{% for row in obj %}
 		<tr>	
-			<td><a href="review/{{ row.booking_id }}">{{ row.displayname }}</a></td>
+			<td><a href="/review/{{ row.booking_id }}">{{ row.displayname }}</a></td>
 			<td>{{ row.start_time }}</td>
 			<td>{{ row.name }}</td>
 			<td>{{ row.address }}</td>
+		</tr>
+	{% endfor %}
+	</table>
+	
+	<!-- display Mobile -->
+	<table class="tablelist mb">
+	<tr>
+		<th>Performer</th>
+		<th>Venue</th>
+	</tr>
+	{% for row in obj %}
+		<tr>	
+			<td style="white-space:nowrap;"><a href="review/{{ row.booking_id }}">{{ row.displayname }}</a></td>
+			<td style="width: 100%;padding-bottom: 10px">
+				<div style="display: flex; justify-content:space-between;">
+					<span>{{ row.name }}</span>
+					<span style="padding-left: 10px;">{{ row.start_time }}</span>
+				</div>
+				{{ row.address }}
+			</td>
 		</tr>
 	{% endfor %}
 	</table>

@@ -10,16 +10,26 @@
 
 	<br><br>
 
-	<form method='POST'> {% csrf_token %}
-	{{ form.as_p }}
-	<input type='submit' value='Submit' />
-	</form>
 	
-	<br><br><br>
-	Don't have an account?<br>
-	<a href="/users/register_user">Create a New Account</a>
-	<br><br>
-	Click here if you forgot your password<br>
-	<a href="/users/passwordreset">Password Reset</a>
+	<div class="bg rounded-4 py-5 px-4 px-md-5">
+		<div class="row gx-5 justify-content-center">
+			<div class="col-lg-8 col-xl-6">
+				<form method='POST'> {% csrf_token %}
+				{{ form.as_p }}
+				<input class="form-control" style="width: 100px;" type='submit' value='Submit' />
+				</form>
+				
+				
+				<br><br><br>
+				Don't have an account?<br>
+				<a href="/users/register_user">Create a New Account</a>
+				<br><br>
+				Click here if you forgot your password<br>
+				<a href="/users/passwordreset">Password Reset</a>
+			</div>
+		</div>
+	</div>
+	
+	
 
 {% endblock %}

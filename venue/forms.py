@@ -13,7 +13,12 @@ class CreateVenueForm(forms.Form):
     
     #phone number (If booker and creating new venue)
     venuephone = forms.CharField(max_length=15, strip=True, required=True, label='Venue Phone')
-    
+
+    def __init__(self, *args, **kwargs):
+        super(CreateVenueForm, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control'
+
     #validation function to make sure field isn't blank
     def clean_venuename(self):
         data = self.cleaned_data['venuename']

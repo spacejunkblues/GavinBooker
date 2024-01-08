@@ -2,10 +2,31 @@
 
 {% block content %}
 	{% load static %}
+	
+	<style>
+		/*Desktop phones*/
+		@media screen and (min-width: 901px) {
+			.mb {
+				display: none;
+			}
+		}
+		
+		/*Mobile phones*/
+		@media screen and (max-width: 900px) {
+			.desktop {
+				display: none;
+			}
+			label {
+				display: none;
+			}
+		}
+	</style>
+	
 	<h1>Roster</h1>
+	<br>
 
-	<!-- display roster info -->
-	<table class="tablelist">
+	<!-- display desktop roster info -->
+	<table class="tablelist desktop">
 		<tr>
 			<th>Remove</th>
 			<th>Name</th>
@@ -38,15 +59,75 @@
 			</tr>
 		{% endfor %}
 	</table>
-	<form style='padding-left: 20px;' method='POST'> {% csrf_token %}
-	{{ form }}
-	<input type='submit' value='Add' />
-	</form>
 	
-	<br><br><br>
-	<span style='padding-left: 20px;'>Can't find a certain performer?</span><br>
-	<a style='padding-left: 20px;' href="/roster/invite">Click to Invite a Performer</a>
-	<br><br><br>
+	<div class="bg rounded-4 py-5 desktop">
+		<div class="row gx-5 justify-content-left">
+			<div class="col-lg-8 col-xl-6">
+				<form style='padding: 20px; display:inline-flex; width: 600px;' method='POST'> {% csrf_token %}
+				{{ form }}&emsp;
+				<input class="form-control" style="width: 100px;" type='submit' value='Add' />
+				</form>
+				
+				<br>
+				<span style='padding-left: 20px;'>Can't find a certain performer?</span><br>
+				<a style='padding-left: 20px;' href="/roster/invite">Click to Invite a Performer</a>
+				<br><br><br>
+			</div>
+		</div>
+	</div>
+	
+	<!-- display Mobile roster info-->
+	<table class="tablelist mb">
+		<tr>
+			<th>Del</th>
+			<th style="padding-left: 0px;">Performer</th>
+		</tr>
+		{% for performer in roster%}
+			<tr>
+				<td>
+					<!--this is the Remove button-->
+					<a href="/roster/delete/{{ performer.performer_id }}" id = "{{ performer.performer_id|slugify|add:'Del'}}"></a>
+					<a href="javascript:confirmDelete('{{ performer.performer_id|slugify|add:'Del'}}','{{ performer.displayname }}');" class="nav-items">
+						<img class='icon' src="{% static 'images/delicon.png' %}">
+					</a>
+					
+				</td>
+				<td style="width: 100%;padding-bottom: 10px;padding-left: 0px;">
+					<div style="display: flex; justify-content:space-between;">
+						<span style="">
+							<a href="/roster/{{ performer.performer_id }}">
+							{{ performer.displayname }}
+							</a>
+						</span>
+						<span style="padding-left: 10px;">${{ performer.rate }}/Hr</span>
+						<span style="padding-left: 10px;padding-right: 10px;">{{ performer.genre_type }}</span>
+					</div>
+						{{ performer.email }}<br>
+						{{ performer.phone_number }}<br>
+						{{ performer.description }}
+				</td>
+			</tr>
+		{% endfor %}
+	</table>
+	
+	<div class="bg rounded-4 py-5 mb">
+		<div class="row gx-5 justify-content-center">
+			<div class="col-lg-8 col-xl-6">
+				<form style="padding: 20px; display:inline-flex;width: 100%;" method='POST'> {% csrf_token %}
+				{{ form }} &emsp;
+				<input class="form-control" style="width: 100px;" type='submit' value='Add' />
+				</form>
+				
+				<br>
+				<span style='padding-left: 20px;'>Can't find a certain performer?</span><br>
+				<a style='padding-left: 20px;' href="/roster/invite">Click to Invite a Performer</a>
+				<br><br><br>
+			</div>
+		</div>
+	</div>
+	<!--end mobile display-->
+	
+	
 
 		
 

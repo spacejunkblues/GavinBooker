@@ -3,6 +3,14 @@
 {% block content %}
 	{% load static %}
 
+	<style>
+		/*Mobile phones*/
+		@media screen and (max-width: 600px) {
+			.mbhide {
+				display: none;
+			}
+		}
+	</style>
 	
 	
 	<h1>Venues</h1>	
@@ -17,9 +25,9 @@
 		<tr>
 			<th>Activate</th>
 			<th>Name</th>
-			<th>Email</th>
-			<th>Address</th>
-			<th>Phone Number</th>
+			<th class="mbhide">Email</th>
+			<th class="mbhide">Address</th>
+			<th class="mbhide">Phone Number</th>
 			<!--<th>Venue's Owner</th> place holder for future shared feature-->
 		</tr>
 		{% for venue in venues %}
@@ -38,9 +46,9 @@
 					{{ venue.name }}
 					<!--</a>-->
 				</td>
-				<td>{{ venue.email }}</td>
-				<td>{{ venue.address }}</td>
-				<td>{{ venue.phone_number }}</td>
+				<td class="mbhide">{{ venue.email }}</td>
+				<td class="mbhide">{{ venue.address }}</td>
+				<td class="mbhide">{{ venue.phone_number }}</td>
 				<!--<td>{{ venue.displayname }}</td> place holder for future shared feature-->
 			</tr>
 		{% endfor %}
@@ -50,7 +58,6 @@
 	<span style='padding-left: 20px;'>Need to book for a venue not listed?</span><br>
 	<a style='padding-left: 20px;' href="/venue/create">Click to Create a New Venue</a>
 	<br><br><br>
-
 
 
 

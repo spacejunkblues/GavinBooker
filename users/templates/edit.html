@@ -8,19 +8,26 @@
 	</style>
 	
 	<h1>Edit Profile</h1>
-	<br>
 
-	<span style="padding-left: 20px;">Username: {{info.username}}</span>
-	<span style="padding-left: 20px;">Email: {{info.email}}</span>
-	<br><br>
 
-	<form method='POST'> {% csrf_token %}
-		{{ user_form.as_p }}
-		
-		{% if info.role_id == 1 %}
-			{{ performer_form.as_p }}
-		{% endif %}
-	<input id='submit' type='submit' value='Update' />
-	</form>
+	<div class="bg rounded-4 py-5 px-4 px-md-5">
+		<div class="row gx-5 justify-content-center">
+			<div class="col-lg-8 col-xl-6">
+			
+				<span>Username: {{info.username}}</span>
+				<span>Email: {{info.email}}</span>
+				<br><br>
+				
+				<form method='POST'> {% csrf_token %}
+					{{ user_form.as_p }}
+					
+					{% if info.role_id == 1 %}
+						{{ performer_form.as_p }}
+					{% endif %}
+				<input class="form-control" style="width: 100px;" id='submit' type='submit' value='Update' />
+				</form>
+			</div>
+		</div>
+	</div>
 
 {% endblock %}
