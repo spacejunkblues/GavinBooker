@@ -167,7 +167,7 @@ table{
 								<br>
 							{% endif %}
 							{% for event in day.events %}
-								{% if forloop.counter < 4 %}
+								{% if forloop.counter < 2 %}
 								<!--this is the event element-->
 								<div style="height:10px;">
 									{% if event.status == "Booked" %}
@@ -182,7 +182,7 @@ table{
 										<span style="font-size: 4px;">-</span>				<!--  Performer Name -->
 									</div>
 								</div>
-								{% elif forloop.counter == 4 %}
+								{% elif forloop.counter == 2 %}
 									+
 								{% endif %}
 							{% endfor %}
